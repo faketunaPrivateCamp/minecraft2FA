@@ -1,0 +1,14 @@
+.gradle
+.idea
+
+gradle
+/paper/gradle/
+/waterfall/gradle/
+/fatJar/gradle/
+/shared/gradle/
+
+build
+/paper/build/
+/waterfall/build/
+/fatJar/build/
+/shared/build/
