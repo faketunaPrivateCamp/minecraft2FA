@@ -6,7 +6,7 @@ import jp.faketuna.minecraft2fa.waterfall.manager.PluginInstanceManager
 import net.md_5.bungee.api.plugin.Plugin
 
 class Minecraft2FA: Plugin() {
-    private val manager = PluginInstanceManager.Manager
+    private val manager = PluginInstanceManager()
 
     override fun onEnable() {
         logger.info("loading plugin")

@@ -1,5 +1,6 @@
 .gradle
 .idea
+run_proxy.ps1
 
 gradle
 /paper/gradle/
