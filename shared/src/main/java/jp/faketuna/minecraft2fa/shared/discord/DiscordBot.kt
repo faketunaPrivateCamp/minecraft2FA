@@ -56,6 +56,10 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
         }
     }
 
+    fun getJDAInstance(): JDA{
+        return DiscordObject.getJDAInstance()
+    }
+
     fun shutdownBot(){
         jda.shutdownNow()
     }
