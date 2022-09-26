@@ -11,6 +11,7 @@ class Minecraft2FA: Plugin() {
         logger.info("loading plugin")
         val token = manager.getConfigManager(this).getToken()
         manager.setDiscordBotInstance(Bot(token))
+        manager.setPlugin(this)
     }
 
     override fun onDisable() {
