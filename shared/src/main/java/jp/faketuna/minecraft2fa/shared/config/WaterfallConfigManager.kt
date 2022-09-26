@@ -13,7 +13,7 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
     private var pluginConfig: Configuration
 
     init {
-        var exists = false
+        val exists: Boolean
         val folder: File = plugin.dataFolder
         if (!folder.exists()){
             folder.mkdir()
