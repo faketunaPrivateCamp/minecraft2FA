@@ -13,7 +13,7 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
             plugin.saveConfig()
             token = "justpasteyourtoken32234235lk34j5lk"
         }
-        Config.setToken(plugin.config.getString("token").toString())
+        Config.setToken(token.toString())
 
     }
 

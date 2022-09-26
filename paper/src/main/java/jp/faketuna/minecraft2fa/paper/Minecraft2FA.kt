@@ -13,7 +13,7 @@ class Minecraft2FA: JavaPlugin() {
         logger.info("Loading plugin")
         if(!Bukkit.spigot().config.getBoolean("settings.bungeecord")){
             val token = ConfigManager().getConfigManager(this).getToken()
-            manager.setDiscordBotInstance(Bot(token, 0))
+            manager.setDiscordBotInstance(Bot(token))
         }
     }
 
