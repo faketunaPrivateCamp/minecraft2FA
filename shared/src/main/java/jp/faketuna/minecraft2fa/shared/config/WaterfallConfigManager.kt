@@ -33,8 +33,7 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
         pluginConfig = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(configFile)
 
         if (!exists){
-            pluginConfig.set("token", "justpasteyourtoken32234235lk34j5lk")
-            saveConfig(pluginConfig)
+            writeDefault()
         }
         Config.setToken(pluginConfig.getString("token"))
         plugin.logger.info("Config loaded.")
@@ -47,6 +46,11 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
 
     fun getConfig(): Configuration{
         return pluginConfig
+    }
+
+    private fun writeDefault(){
+        pluginConfig.set("token", "justpasteyourtoken32234235lk34j5lk")
+        saveConfig(pluginConfig)
     }
 
     private fun saveConfig(config:Configuration){

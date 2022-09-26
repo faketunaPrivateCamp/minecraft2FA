@@ -9,9 +9,8 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
 
     init {
         if (token == null){
-            plugin.config.set("token", "justpasteyourtoken32234235lk34j5lk")
-            plugin.saveConfig()
-            token = "justpasteyourtoken32234235lk34j5lk"
+            writeDefault()
+            token = plugin.config.getString("token")
         }
         Config.setToken(token.toString())
 
@@ -23,5 +22,10 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
 
     fun getConfig(): FileConfiguration {
         return plugin.config
+    }
+
+    private fun writeDefault(){
+        plugin.config.set("token", "justpasteyourtoken32234235lk34j5lk")
+        plugin.saveConfig()
     }
 }
