@@ -60,6 +60,7 @@ project(":minecraft2FA-shared"){
     dependencies{
         compileOnly("io.github.waterfallmc:waterfall-api:${proxyVersion}-R0.1-SNAPSHOT")
         compileOnly("io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT")
+        implementation("mysql:mysql-connector-java:8.0.15")
     }
 
 }
