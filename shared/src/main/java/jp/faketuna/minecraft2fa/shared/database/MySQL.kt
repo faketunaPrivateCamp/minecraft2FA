@@ -9,7 +9,7 @@ import java.sql.Statement
 import java.util.UUID
 
 class MySQL(private val connectionAddress: String, private val user: String, private val password: String): Database {
-    override val address = "jdbc:mysql://$connectionAddress"
+    override val address = "jdbc:mysql://$connectionAddress/minecraft2fa"
     private val integrationTableName = "minecraft2fa_discord_integration"
     private val authDataTableName = "minecraft2fa_auth_data"
 
