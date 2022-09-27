@@ -61,6 +61,7 @@ project(":minecraft2FA-shared"){
         compileOnly("io.github.waterfallmc:waterfall-api:${proxyVersion}-R0.1-SNAPSHOT")
         compileOnly("io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT")
         implementation("mysql:mysql-connector-java:8.0.15")
+        implementation("com.warrenstrange:googleauth:1.5.0")
     }
 
 }
