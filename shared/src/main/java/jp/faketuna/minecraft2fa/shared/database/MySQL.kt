@@ -2,6 +2,7 @@ package jp.faketuna.minecraft2fa.shared.database
 
 import jp.faketuna.minecraft2fa.shared.objcets.Database
 import java.sql.Connection
+import java.sql.DatabaseMetaData
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.Statement
@@ -9,6 +10,8 @@ import java.util.UUID
 
 class MySQL(private val connectionAddress: String, private val user: String, private val password: String): Database {
     override val address = "jdbc:mysql://$connectionAddress"
+    private val integrationTableName = "minecraft2fa_discord_integration"
+    private val authDataTableName = "minecraft2fa_auth_data"
 
     override fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>{
         var connection: Connection? = null
@@ -20,7 +23,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("SELECT * FROM minecraft2fa_discord_integration where discord_id = $discordID")
+            response = statement.executeQuery("SELECT * FROM $integrationTableName where discord_id = $discordID")
             result["discord_id"] = response.getLong("discord_id").toString()
             result["minecraft_uuid"] = response.getString("minecraft_uuid")
             result["auth_id"] = response.getString("auth_id")
@@ -43,7 +46,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("INSERT INTO minecraft2fa_discord_integration(discord_id, minecraft_uuid) VALUES($discordID, $minecraftUUID)")
+            response = statement.executeQuery("INSERT INTO $integrationTableName(discord_id, minecraft_uuid) VALUES($discordID, $minecraftUUID)")
         } catch (e: Exception){
             e.printStackTrace()
         } finally {
@@ -62,7 +65,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("UPDATE minecraft2fa_discord_integration SET minecraft_uuid = \'$minecraftUUID\' WHERE discord_id = $discordID")
+            response = statement.executeQuery("UPDATE $integrationTableName SET minecraft_uuid = \'$minecraftUUID\' WHERE discord_id = $discordID")
         } catch (e: Exception){
             e.printStackTrace()
         } finally {
@@ -81,7 +84,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("UPDATE minecraft2fa_discord_integration SET auth_id = \'$authID\' WHERE discord_id = $discordID")
+            response = statement.executeQuery("UPDATE $integrationTableName SET auth_id = \'$authID\' WHERE discord_id = $discordID")
         } catch (e: Exception){
             e.printStackTrace()
         } finally {
@@ -101,7 +104,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("SELECT * FROM minecraft2fa_auth_data where auth_id = $authID")
+            response = statement.executeQuery("SELECT * FROM $authDataTableName where auth_id = $authID")
             result["2fa_secret_key"] = response.getString("2fa_secret_key")
             result["2fa_backup_codes"] = response.getString("2fa_backup_codes")
         } catch (e: Exception){
@@ -112,5 +115,105 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             connection?.close()
         }
         return result
+    }
+
+    override fun isTablesExists(): Boolean {
+        val authTableExists = is2FATableExists()
+        val diTableExists = isDiscordIntegrationTableExists()
+        if(authTableExists == diTableExists && authTableExists){
+            return true
+        }
+        return false
+    }
+
+    override fun isDiscordIntegrationTableExists(): Boolean{        var tableExists = false
+        var connection: Connection? = null
+        var meta: DatabaseMetaData? = null
+        var response: ResultSet? = null
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            meta = connection.metaData
+            response = meta.getTables(null, null, integrationTableName, null)
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            connection?.close()
+        }
+        if(response!!.next()){
+            tableExists = true
+        }
+        return tableExists
+    }
+
+    override fun is2FATableExists(): Boolean{
+        var tableExists = false
+        var connection: Connection? = null
+        var meta: DatabaseMetaData? = null
+        var response: ResultSet? = null
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            meta = connection.metaData
+            response = meta.getTables(null, null, authDataTableName, null)
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            connection?.close()
+        }
+        if(response!!.next()){
+            tableExists = true
+        }
+        return tableExists
+    }
+
+    override fun createDiscordIntegrationTable() {
+        val createTableSQL: String = "CREATE TABLE $integrationTableName(" +
+                "discord_id BIGINT(18) NOT NULL, " +
+                "minecraft_uuid VARCHAR(36) NOT NULL, " +
+                "auth_id VARCHAR(128), " +
+                "PRIMARY KEY (discord_id)" +
+                ")"
+        var connection: Connection? = null
+        var statement: Statement? = null
+        var response: ResultSet? = null
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            statement = connection.createStatement()
+            response = statement.executeQuery(createTableSQL)
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            statement?.close()
+            connection?.close()
+        }
+    }
+
+    override fun create2FATable() {
+        val createTableSQL: String = "CREATE TABLE $authDataTableName(" +
+                "auth_id VARCHAR(128) NOT NULL, " +
+                "2fa_secret_key VARCHAR(128) NOT NULL, " +
+                "2fa_backup_codes VARCHAR(128) NOT NULL, " +
+                "PRIMARY KEY (auth_id)" +
+                ")"
+        var connection: Connection? = null
+        var statement: Statement? = null
+        var response: ResultSet? = null
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            statement = connection.createStatement()
+            response = statement.executeQuery(createTableSQL)
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            statement?.close()
+            connection?.close()
+        }
     }
 }
