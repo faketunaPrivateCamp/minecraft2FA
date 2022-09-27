@@ -1,15 +1,16 @@
 package jp.faketuna.minecraft2fa.shared.database
 
+import jp.faketuna.minecraft2fa.shared.objcets.Database
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.Statement
 import java.util.UUID
 
-class MySQL(private val connectionAddress: String, private val user: String, private val password: String) {
-    private val address = "jdbc:mysql://$connectionAddress"
+class MySQL(private val connectionAddress: String, private val user: String, private val password: String): Database {
+    override val address = "jdbc:mysql://$connectionAddress"
 
-    fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>{
+    override fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>{
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
@@ -33,7 +34,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         return result
     }
 
-    fun addDiscordIntegrationInformation(discordID: Long, minecraftUUID: UUID){
+    override fun addDiscordIntegrationInformation(discordID: Long, minecraftUUID: UUID){
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
@@ -52,7 +53,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         }
     }
 
-    fun updateDiscordIntegrationMinecraftUUID(discordID: Long, minecraftUUID: UUID){
+    override fun updateDiscordIntegrationMinecraftUUID(discordID: Long, minecraftUUID: UUID){
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
@@ -71,7 +72,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         }
     }
 
-    fun updateDiscordIntegrationAuthID(discordID: Long, authID: String){
+    override fun updateDiscordIntegrationAuthID(discordID: Long, authID: String){
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
@@ -90,7 +91,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         }
     }
 
-    fun get2FAInformation(authID: String): HashMap<String, String?>{
+    override fun get2FAInformation(authID: String): HashMap<String, String?>{
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
