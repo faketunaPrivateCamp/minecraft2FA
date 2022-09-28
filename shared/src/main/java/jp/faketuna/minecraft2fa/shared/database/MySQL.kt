@@ -126,6 +126,21 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         return result
     }
 
+    override fun isDatabaseExists(): Boolean {
+        var connection: Connection? = null
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+        } catch (e: Exception){
+            e.printStackTrace()
+            connection?.close()
+            return false
+        } finally {
+            connection?.close()
+        }
+        return true
+    }
+
     override fun isTablesExists(): Boolean {
         val authTableExists = is2FATableExists()
         val diTableExists = isDiscordIntegrationTableExists()
@@ -175,6 +190,25 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             return true
         }
         return false
+    }
+
+    override fun createDiscordIntegrationDatabase() {
+        val createTableSQL = "CREATE DATABASE $databaseName"
+        var connection: Connection? = null
+        var statement: Statement? = null
+        var response: ResultSet? = null
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            statement = connection.createStatement()
+            response = statement.executeQuery(createTableSQL)
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            statement?.close()
+            connection?.close()
+        }
     }
 
     override fun createDiscordIntegrationTable() {
