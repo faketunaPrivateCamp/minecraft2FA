@@ -12,7 +12,7 @@ interface Database {
      * @param discordID Long
      * @return HashMap<String, String?>
      */
-    fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>
+    fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>?
 
     /**
      * Adds User data to Discord integration database
@@ -40,7 +40,7 @@ interface Database {
      * @param authID String
      * @return HashMap<String, String?>
      */
-    fun get2FAInformation(authID: String): HashMap<String, String?>
+    fun get2FAInformation(authID: String): HashMap<String, String?>?
 
     /**
      * Checks table is exists

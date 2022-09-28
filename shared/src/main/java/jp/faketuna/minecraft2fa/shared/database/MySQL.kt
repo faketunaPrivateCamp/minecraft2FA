@@ -9,11 +9,12 @@ import java.sql.Statement
 import java.util.UUID
 
 class MySQL(private val connectionAddress: String, private val user: String, private val password: String): Database {
-    override val address = "jdbc:mysql://$connectionAddress/minecraft2fa"
     private val integrationTableName = "minecraft2fa_discord_integration"
     private val authDataTableName = "minecraft2fa_auth_data"
+    private val databaseName = "minecraft2fa"
+    override val address = "jdbc:mysql://$connectionAddress/$databaseName"
 
-    override fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>{
+    override fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>?{
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
@@ -23,12 +24,16 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("SELECT * FROM $integrationTableName where discord_id = $discordID")
+            response = statement.executeQuery("SELECT * FROM $integrationTableName WHERE discord_id = $discordID")
             result["discord_id"] = response.getLong("discord_id").toString()
             result["minecraft_uuid"] = response.getString("minecraft_uuid")
             result["auth_id"] = response.getString("auth_id")
         } catch (e: Exception){
             e.printStackTrace()
+            response?.close()
+            statement?.close()
+            connection?.close()
+            return null
         } finally {
             response?.close()
             statement?.close()
@@ -94,7 +99,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         }
     }
 
-    override fun get2FAInformation(authID: String): HashMap<String, String?>{
+    override fun get2FAInformation(authID: String): HashMap<String, String?>?{
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
@@ -104,11 +109,15 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("SELECT * FROM $authDataTableName where auth_id = $authID")
+            response = statement.executeQuery("SELECT * FROM $authDataTableName WHERE auth_id = $authID")
             result["2fa_secret_key"] = response.getString("2fa_secret_key")
             result["2fa_backup_codes"] = response.getString("2fa_backup_codes")
         } catch (e: Exception){
             e.printStackTrace()
+            response?.close()
+            statement?.close()
+            connection?.close()
+            return null
         } finally {
             response?.close()
             statement?.close()
@@ -126,7 +135,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         return false
     }
 
-    override fun isDiscordIntegrationTableExists(): Boolean{        var tableExists = false
+    override fun isDiscordIntegrationTableExists(): Boolean{
         var connection: Connection? = null
         var meta: DatabaseMetaData? = null
         var response: ResultSet? = null
@@ -142,13 +151,12 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             connection?.close()
         }
         if(response!!.next()){
-            tableExists = true
+            return true
         }
-        return tableExists
+        return false
     }
 
     override fun is2FATableExists(): Boolean{
-        var tableExists = false
         var connection: Connection? = null
         var meta: DatabaseMetaData? = null
         var response: ResultSet? = null
@@ -164,9 +172,9 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             connection?.close()
         }
         if(response!!.next()){
-            tableExists = true
+            return true
         }
-        return tableExists
+        return false
     }
 
     override fun createDiscordIntegrationTable() {
