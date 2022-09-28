@@ -43,6 +43,12 @@ interface Database {
     fun get2FAInformation(authID: String): HashMap<String, String?>?
 
     /**
+     * Checks Database are exists
+     * @return Boolean
+     */
+    fun isDatabaseExists(): Boolean
+
+    /**
      * Checks table is exists
      * @return Boolean
      */
@@ -59,6 +65,11 @@ interface Database {
      * @return Boolean
      */
     fun is2FATableExists(): Boolean
+
+    /**
+     * Create a database for Discord integration
+     */
+    fun createDiscordIntegrationDatabase()
 
     /**
      * Creates a table for Discord integration
