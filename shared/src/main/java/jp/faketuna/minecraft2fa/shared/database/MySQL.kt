@@ -5,6 +5,7 @@ import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.DriverManager
 import java.sql.ResultSet
+import java.sql.SQLException
 import java.sql.Statement
 import java.util.UUID
 
@@ -14,7 +15,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     private val databaseName = "minecraft2fa"
     override val address = "jdbc:mysql://$connectionAddress/$databaseName"
 
-    override fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>?{
+    override fun getDiscordIntegrationInformation(discordID: Long): HashMap<String, String?>{
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
@@ -33,7 +34,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response?.close()
             statement?.close()
             connection?.close()
-            return null
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -54,6 +55,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery("INSERT INTO $integrationTableName(discord_id, minecraft_uuid) VALUES($discordID, $minecraftUUID)")
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -73,6 +75,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery("UPDATE $integrationTableName SET minecraft_uuid = \'$minecraftUUID\' WHERE discord_id = $discordID")
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -92,6 +95,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery("UPDATE $integrationTableName SET auth_id = \'$authID\' WHERE discord_id = $discordID")
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -111,6 +115,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery("DELETE FROM $integrationTableName WHERE discord_id = \'$discordID\'")
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -118,7 +123,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         }
     }
 
-    override fun get2FAInformation(authID: String): HashMap<String, String?>?{
+    override fun get2FAInformation(authID: String): HashMap<String, String?>{
         var connection: Connection? = null
         var statement: Statement? = null
         var response: ResultSet? = null
@@ -136,7 +141,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response?.close()
             statement?.close()
             connection?.close()
-            return null
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -157,6 +162,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery("INSERT INTO $authDataTableName(auth_id, 2fa_secret_key, 2fa_backup_codes) VALUES($authID, $secretKey, $backupCodes)")
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -176,6 +182,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery("UPDATE $authDataTableName SET 2fa_secret_key = \'$secretKey\' WHERE auth_id = $authID")
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -195,6 +202,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery("UPDATE $authDataTableName SET 2fa_backup_codes = \'$backupCodes\' WHERE auth_id = $authID")
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -214,6 +222,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery("DELETE FROM $authDataTableName WHERE auth_id = \'$authID\'")
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -229,7 +238,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         } catch (e: Exception){
             e.printStackTrace()
             connection?.close()
-            return false
+            throw SQLException()
         } finally {
             connection?.close()
         }
@@ -256,6 +265,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = meta.getTables(null, null, integrationTableName, null)
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             connection?.close()
@@ -277,6 +287,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = meta.getTables(null, null, authDataTableName, null)
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             connection?.close()
@@ -299,6 +310,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery(createTableSQL)
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -325,6 +337,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery(createTableSQL)
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()
@@ -349,6 +362,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response = statement.executeQuery(createTableSQL)
         } catch (e: Exception){
             e.printStackTrace()
+            throw SQLException()
         } finally {
             response?.close()
             statement?.close()

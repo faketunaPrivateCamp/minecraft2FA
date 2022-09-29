@@ -8,7 +8,6 @@ import jp.faketuna.minecraft2fa.shared.database.MySQL
 import net.dv8tion.jda.api.exceptions.InvalidTokenException
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
-import java.sql.SQLException
 
 class Minecraft2FA: JavaPlugin() {
     private val manager = PluginInstanceManager()
@@ -17,6 +16,7 @@ class Minecraft2FA: JavaPlugin() {
         logger.info("Loading plugin")
         manager.setConfigManager(ConfigManager())
         if(!Bukkit.spigot().config.getBoolean("settings.bungeecord")){
+            logger.info("Running in standalone mode.")
             val config = manager.getConfigManager(this)
             val token = config.getToken()
             try{
@@ -29,13 +29,15 @@ class Minecraft2FA: JavaPlugin() {
             }
             try{
                 manager.setMySQLInstance(MySQL(config.getMySQLServerAddress(), config.getMySQLUserID(), config.getMySQLUserPassword()))
-            } catch (e: SQLException){
+            } catch (e: Exception){
                 logger.info("§4Cannot connect to MySQL database! Check your config.")
                 logger.info("§4Plugin will not start.")
                 Bukkit.getPluginManager().disablePlugin(this)
                 return
             }
             this.getCommand("connectdiscord")!!.setExecutor(ConnectCommand())
+        } else {
+            logger.info("Running in bungeecord mode.")
         }
         manager.setPlugin(this)
     }
