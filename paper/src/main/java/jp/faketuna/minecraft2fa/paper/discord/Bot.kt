@@ -11,6 +11,6 @@ class Bot(private val token: String): DiscordBot(token) {
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        TODO()
+        super.onSlashCommandInteraction(event)
     }
 }
