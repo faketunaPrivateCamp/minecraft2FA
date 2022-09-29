@@ -1,6 +1,7 @@
 package jp.faketuna.minecraft2fa.shared.discord
 
 import jp.faketuna.minecraft2fa.shared.auth.AccountConnection
+import jp.faketuna.minecraft2fa.shared.config.Config
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -45,7 +46,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
         }
 
         if(event.name == "connect"){
-            if (event.member!!.roles.contains(event.member!!.guild.getRoleById(1024875355720388648))){
+            if (event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))){
                 val ac = AccountConnection()
                 val token = ac.registerToken(event.member!!.idLong)
                 event.reply("Generating token...")
