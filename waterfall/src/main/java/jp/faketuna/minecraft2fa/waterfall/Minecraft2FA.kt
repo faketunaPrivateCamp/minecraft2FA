@@ -9,6 +9,7 @@ import net.md_5.bungee.api.plugin.Plugin
 
 class Minecraft2FA: Plugin() {
     private val manager = PluginInstanceManager()
+    private var pluginUnloaded = false
 
     override fun onEnable() {
         logger.info("loading plugin")
@@ -28,17 +29,21 @@ class Minecraft2FA: Plugin() {
             manager.setMySQLInstance(MySQL(config.getMySQLServerAddress(), config.getMySQLUserID(), config.getMySQLUserPassword()))
             manager.getMySQLInstance().isDatabaseExists()
         } catch (e: Exception){
-            e.printStackTrace()
             logger.info("§4Cannot connect to MySQL database! Check your config.")
             logger.info("§4Plugin will not start.")
             onDisable()
+            pluginUnloaded = true
             return
         }
         manager.setPlugin(this)
     }
 
     override fun onDisable() {
-        logger.info("plugin unloaded")
-        if (manager.isDiscordBotInitialized()) manager.getDiscordBotInstance().shutdownBot()
+        logger.info("Unloading plugin...")
+        if (manager.isDiscordBotInitialized() && !pluginUnloaded) {
+            manager.getDiscordBotInstance().getJDAInstance().awaitReady().shutdown()
+            logger.info("Shutdown Discord bot.")
+        }
+        logger.info("Plugin unloaded.")
     }
 }
