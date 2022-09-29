@@ -44,7 +44,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         return result
     }
 
-    override fun addDiscordIntegrationInformation(discordID: Long, minecraftUUID: UUID){
+    override fun addDiscordIntegrationInformation(discordID: Long, minecraftUUID: UUID): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
         val response: Int
@@ -63,9 +63,10 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
-    override fun updateDiscordIntegrationMinecraftUUID(discordID: Long, minecraftUUID: UUID){
+    override fun updateDiscordIntegrationMinecraftUUID(discordID: Long, minecraftUUID: UUID): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
         val response: Int
@@ -84,9 +85,10 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
-    override fun updateDiscordIntegrationAuthID(discordID: Long, authID: String){
+    override fun updateDiscordIntegrationAuthID(discordID: Long, authID: String): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
         val response: Int
@@ -105,9 +107,10 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
-    override fun removeDiscordIntegrationInformation(discordID: Long) {
+    override fun removeDiscordIntegrationInformation(discordID: Long): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
         val response: Int
@@ -125,6 +128,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
     override fun get2FAInformation(authID: String): HashMap<String, String?>{
@@ -154,7 +158,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         return result
     }
 
-    override fun add2FAInformation(authID: String, secretKey: String, backupCodes: String) {
+    override fun add2FAInformation(authID: String, secretKey: String, backupCodes: String): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
         val response: Int
@@ -174,9 +178,10 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
-    override fun update2FASecretKeyInformation(authID: String, secretKey: String) {
+    override fun update2FASecretKeyInformation(authID: String, secretKey: String): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
         val response: Int
@@ -195,9 +200,10 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
-    override fun update2FABackupCodeInformation(authID: String, backupCodes: String) {
+    override fun update2FABackupCodeInformation(authID: String, backupCodes: String): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
         val response: Int
@@ -216,9 +222,10 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
-    override fun remove2FAInformation(authID: String) {
+    override fun remove2FAInformation(authID: String): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
         val response: Int
@@ -236,6 +243,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
     override fun isDatabaseExists(): Boolean {
@@ -304,7 +312,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         return resp
     }
 
-    override fun createDiscordIntegrationTable() {
+    override fun createDiscordIntegrationTable(): Int{
         val createTableSQL: String = "CREATE TABLE $integrationTableName(" +
                 "discord_id BIGINT(18) NOT NULL, " +
                 "minecraft_uuid VARCHAR(36) NOT NULL, " +
@@ -328,9 +336,10 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 
-    override fun create2FATable() {
+    override fun create2FATable(): Int{
         val createTableSQL: String = "CREATE TABLE $authDataTableName(" +
                 "auth_id VARCHAR(128) NOT NULL, " +
                 "2fa_secret_key VARCHAR(128) NOT NULL, " +
@@ -352,5 +361,6 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             statement?.close()
             connection?.close()
         }
+        return response
     }
 }
