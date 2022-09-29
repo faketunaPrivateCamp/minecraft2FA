@@ -11,40 +11,62 @@ class AuthManager {
     private lateinit var key: GoogleAuthenticatorKey
 
     object Manager{
-        private val registeringUsers = mutableListOf<Long>()
+        private val registeringUsers = HashMap<Long, String>()
 
-        fun addRegisteringUser(discordID: Long){
-            registeringUsers.add(discordID)
+        fun addRegisteringUser(discordID: Long, token: String){
+            registeringUsers[discordID] = token
         }
 
         fun removeRegisteringUser(discordID: Long){
             registeringUsers.remove(discordID)
         }
 
+        fun getSecretKeyFromRegisteringUser(discordID: Long): String?{
+            return registeringUsers[discordID]
+        }
+
         fun isUserRegisteringProgress(discordID :Long): Boolean{
-            if (registeringUsers.contains(discordID)) return true
+            if (registeringUsers.keys.contains(discordID)) return true
             return false
         }
     }
 
     fun isUserHas2FA(discordID: Long): Boolean{
-        val userInfo = mysql.getDiscordIntegrationInformation(discordID)
+        val userInfo: HashMap<String, String?>
+        try {
+             userInfo = mysql.getDiscordIntegrationInformation(discordID)
+        } catch (e: Exception){
+            return false
+        }
         for (map in userInfo){
-            if (map.value!!.contains("auth_id")) return true
+            if (map.key.contains("auth_id") && !map.value.isNullOrEmpty()) return true
         }
         return false
     }
 
-    fun addRegisteringUser(discordID: Long){
-        Manager.addRegisteringUser(discordID)
+    fun isUserHasIntegration(discordID: Long): Boolean{
+        try{
+            mysql.getDiscordIntegrationInformation(discordID)
+        } catch (e: Exception){
+            return false
+        }
+        return true
+    }
+
+    fun addRegisteringUser(discordID: Long, token: String){
+        Manager.addRegisteringUser(discordID, token)
     }
 
     fun removeRegisteringUser(discordID: Long){
         Manager.removeRegisteringUser(discordID)
     }
 
-    fun isUserRegisteringProgress(discordID: Long){
-        Manager.isUserRegisteringProgress(discordID)
+    fun getSecretKeyFromRegisteringUser(discordID: Long): String?{
+        return Manager.getSecretKeyFromRegisteringUser(discordID)
+    }
+
+    fun isUserRegisteringProgress(discordID: Long): Boolean{
+        return Manager.isUserRegisteringProgress(discordID)
     }
 
     fun generateSecretKey(): String{

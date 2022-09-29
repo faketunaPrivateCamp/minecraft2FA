@@ -31,7 +31,6 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             result["minecraft_uuid"] = response.getString("minecraft_uuid")
             result["auth_id"] = response.getString("auth_id")
         } catch (e: Exception){
-            e.printStackTrace()
             response?.close()
             statement?.close()
             connection?.close()

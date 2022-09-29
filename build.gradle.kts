@@ -62,6 +62,8 @@ project(":minecraft2FA-shared"){
         compileOnly("io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT")
         implementation("mysql:mysql-connector-java:8.0.15")
         implementation("com.warrenstrange:googleauth:1.5.0")
+        implementation("com.google.zxing:core:3.5.0")
+        implementation("com.google.zxing:javase:3.5.0")
     }
 
 }

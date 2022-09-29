@@ -1,16 +1,29 @@
 package jp.faketuna.minecraft2fa.shared.discord
 
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.client.j2se.MatrixToImageWriter
+import com.google.zxing.qrcode.QRCodeWriter
 import jp.faketuna.minecraft2fa.shared.auth.AccountConnection
+import jp.faketuna.minecraft2fa.shared.auth.AuthManager
 import jp.faketuna.minecraft2fa.shared.config.Config
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.Modal
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.text.TextInput
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.FileUpload
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
 open class DiscordBot(private val token: String): ListenerAdapter() {
 
@@ -40,9 +53,10 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
             .queue()
         jda.upsertCommand("auth", "2 factor authentication command.")
             .addSubcommands(SubcommandData("verify", "Verify the your minecraft session with 2fa."))
-            .addSubcommands(SubcommandData("register", "Register a 2fa for this account."))
-            .addOption(OptionType.STRING, "cancel", "Cancel a registration.")
-            .addSubcommands(SubcommandData("unregister", "Unregister a 2fa for this account."))
+            .addSubcommands(SubcommandData("register", "Register the 2fa for this account."))
+            .addSubcommands(SubcommandData("unregister", "Unregister the 2fa for this account."))
+            .addSubcommands(SubcommandData("cancel", "Cancel the 2fa registration."))
+            .queue()
         DiscordObject.setJDAInstance(jda)
     }
 
@@ -97,8 +111,49 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
 
         if(event.name == "auth"){
             if (event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))){
+                val discordID = event.member!!.idLong
+                val authManager = AuthManager()
                 if (event.subcommandName.equals("register", ignoreCase = true)){
+                    if(authManager.isUserRegisteringProgress(discordID)){
+                        event.reply("Your in registering progress! if you want cancel please type `/auth cancel`.")
+                            .setEphemeral(true)
+                            .queue()
+                        return
+                    }/*
+                    if (!authManager.isUserHasIntegration(discordID)){
+                        event.reply("Your not connected the minecraft with discord. Please `/connect start` in first.")
+                            .setEphemeral(true)
+                            .queue()
+                    }
 
+                    if (!authManager.isUserHas2FA(discordID)){
+                        event.reply("Your already registered 2fa! to unregister type `/auth unregister`.")
+                            .setEphemeral(true)
+                            .queue()
+                        return
+                    }
+                    */
+                    val secretKey = authManager.generateSecretKey()
+                    authManager.addRegisteringUser(discordID, secretKey)
+                    val optAuthURI = "otpauth://totp/Minecraft2faAuthentication:${event.member!!.effectiveName}?secret=$secretKey&issuer=minecraft2fa"
+
+                    try{
+                        val writer = QRCodeWriter()
+                        val bitMatrix = writer.encode(optAuthURI, BarcodeFormat.QR_CODE, 256, 256)
+                        val image = MatrixToImageWriter.toBufferedImage(bitMatrix)
+                        val bos = ByteArrayOutputStream()
+                        ImageIO.write(image, "png", bos)
+                        event.reply("Read QR code with Any topt compatible authenticator or paste key `$secretKey`.")
+                            .addFiles(FileUpload.fromData(bos.toByteArray(), "qr.png"))
+                            .setEphemeral(true)
+                            .setActionRow(Button.primary("ready", "Verify code"))
+                            .queue()
+                    } catch (e: Exception){
+                        e.printStackTrace()
+                        event.reply("Failed to generate QR code! Please try again.")
+                            .setEphemeral(true)
+                            .queue()
+                    }
                 }
 
             }
@@ -108,6 +163,36 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
             event.reply("Bot name: ${jda.status.name}")
                 .setEphemeral(true)
                 .queue()
+        }
+    }
+
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
+        if (event.componentId == "ready"){
+            val totpCode = TextInput.create("2fa-verification-input", "2FA authentication code", TextInputStyle.SHORT)
+                .setMinLength(6)
+                .setMaxLength(6)
+                .setRequired(true)
+                .build()
+            val modal = Modal.create("2fa-verification-modal", "Enter 2FA code shown in your authenticator!")
+                .addActionRows(ActionRow.of(totpCode))
+                .build()
+            event.replyModal(modal).queue()
+        }
+    }
+
+    override fun onModalInteraction(event: ModalInteractionEvent) {
+        if (event.modalId == "2fa-verification-modal"){
+            val verificationCode = event.getValue("2fa-verification-input")!!.asString.toInt()
+            val authManager = AuthManager()
+            if (authManager.isValidCode(authManager.getSecretKeyFromRegisteringUser(event.member!!.idLong).toString(), verificationCode)){
+                event.reply("Code verified and registered 2fa!")
+                    .setEphemeral(true)
+                    .queue()
+            } else{
+                event.reply("Invalid code! Please try again.")
+                    .setEphemeral(true)
+                    .queue()
+            }
         }
     }
 
