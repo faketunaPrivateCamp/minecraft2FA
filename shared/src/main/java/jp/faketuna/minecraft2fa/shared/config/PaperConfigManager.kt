@@ -6,18 +6,24 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class PaperConfigManager(private val plugin: JavaPlugin): Config() {
     private var token: String? = plugin.config.getString("token")
+    private var roleID: Long? = plugin.config.getLong("connectableRoleID")
 
     init {
-        if (token == null){
+        if (token == null || roleID == null){
             writeDefault()
             token = plugin.config.getString("token")
+            roleID = plugin.config.getLong("connectableRoleID")
         }
         Config.setToken(token.toString())
-
+        Config.setRoleID(plugin.config.getLong("connectableRoleID"))
     }
 
     fun getToken(): String{
         return Config.getToken()
+    }
+
+    fun getRoleID(): Long{
+        return Config.getRoleID()
     }
 
     fun getConfig(): FileConfiguration {
@@ -26,6 +32,7 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
 
     private fun writeDefault(){
         plugin.config.set("token", "justpasteyourtoken32234235lk34j5lk")
+        plugin.config.set("connectableRoleID", "209348572902897")
         plugin.saveConfig()
     }
 }

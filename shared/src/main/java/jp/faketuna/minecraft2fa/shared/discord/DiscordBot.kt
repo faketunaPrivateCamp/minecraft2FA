@@ -45,13 +45,16 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
         }
 
         if(event.name == "connect"){
-            if (event.member!!.roles.contains(event.member!!.guild.getRoleById(""))){
+            if (event.member!!.roles.contains(event.member!!.guild.getRoleById(1024875355720388648))){
                 val ac = AccountConnection()
                 val token = ac.registerToken(event.member!!.idLong)
                 event.reply("Generating token...")
                     .setEphemeral(true)
                     .flatMap { event.hook.editOriginal("Token generated." +
-                            "Please execute `/connect $token` in server.") }
+                            " Please execute `/connect $token` in server.") }.queue()
+            } else{
+                event.reply("This command only can executed from admins!")
+                    .setEphemeral(true).queue()
             }
         }
 
@@ -65,6 +68,10 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if(event.message.contentRaw == "test"){
             event.message.reply("Bot status: ${jda.status.name}")
+                .queue()
+        }
+        if(event.message.contentRaw == "check"){
+            event.message.reply("${AccountConnection.VerificationObject.getTokenMap()}")
                 .queue()
         }
     }
