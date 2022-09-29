@@ -273,7 +273,9 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
                 "discord_id BIGINT(18) NOT NULL, " +
                 "minecraft_uuid VARCHAR(36) NOT NULL, " +
                 "auth_id VARCHAR(128), " +
-                "PRIMARY KEY (discord_id)" +
+                "PRIMARY KEY (discord_id)," +
+                "FOREIGN KEY(auth_id)" +
+                " REFERENCES $authDataTableName(auth_id)" +
                 ")"
         var connection: Connection? = null
         var statement: Statement? = null
