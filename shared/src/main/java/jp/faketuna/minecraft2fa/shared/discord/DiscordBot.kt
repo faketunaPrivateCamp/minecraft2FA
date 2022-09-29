@@ -155,7 +155,9 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                             .queue()
                     }
                 }
-
+            } else{
+                event.reply("This command only can executed from admins!")
+                    .setEphemeral(true).queue()
             }
         }
 
@@ -167,7 +169,9 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
+        if (!event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))) return
         if (event.componentId == "ready"){
+            if (!AuthManager().isUserRegisteringProgress(event.member!!.idLong)) return
             val totpCode = TextInput.create("2fa-verification-input", "2FA authentication code", TextInputStyle.SHORT)
                 .setMinLength(6)
                 .setMaxLength(6)
@@ -181,6 +185,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
     }
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
+        if (!event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))) return
         if (event.modalId == "2fa-verification-modal"){
             val verificationCode = event.getValue("2fa-verification-input")!!.asString.toInt()
             val authManager = AuthManager()
