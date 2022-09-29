@@ -272,7 +272,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response?.close()
             connection?.close()
         }
-        if(resp){
+        if(!resp){
             return true
         }
         return false
@@ -296,7 +296,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response?.close()
             connection?.close()
         }
-        if(resp){
+        if(!resp){
             return true
         }
         return false
