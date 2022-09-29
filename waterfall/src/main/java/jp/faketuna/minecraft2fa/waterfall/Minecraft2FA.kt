@@ -36,7 +36,7 @@ class Minecraft2FA: Plugin() {
             return
         }
         val sql = manager.getMySQLInstance()
-        if(sql.isTablesExists()){
+        if(!sql.isTablesExists()){
             if (!sql.is2FATableExists()){
                 sql.create2FATable()
             }

@@ -272,10 +272,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response?.close()
             connection?.close()
         }
-        if(!resp){
-            return true
-        }
-        return false
+        return resp
     }
 
     override fun is2FATableExists(): Boolean{
@@ -296,10 +293,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response?.close()
             connection?.close()
         }
-        if(!resp){
-            return true
-        }
-        return false
+        return resp
     }
 
     override fun createDiscordIntegrationTable() {
