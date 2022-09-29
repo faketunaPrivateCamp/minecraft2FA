@@ -43,6 +43,28 @@ interface Database {
     fun get2FAInformation(authID: String): HashMap<String, String?>?
 
     /**
+     * Sets a 2fa information to Discord integration database
+     * @param authID String
+     * @param secretKey String
+     * @param backupCodes String
+     */
+    fun add2FAInformation(authID: String, secretKey: String, backupCodes: String)
+
+    /**
+     * Updates a 2fa Secret key information to Discord integration database
+     * @param authID String
+     * @param secretKey String
+     */
+    fun update2FASecretKeyInformation(authID: String, secretKey: String)
+
+    /**
+     * Updates a 2fa Secret key information to Discord integration database
+     * @param authID String
+     * @param backupCodes String
+     */
+    fun update2FABackupCodeInformation(authID: String, backupCodes: String)
+
+    /**
      * Checks Database are exists
      * @return Boolean
      */
