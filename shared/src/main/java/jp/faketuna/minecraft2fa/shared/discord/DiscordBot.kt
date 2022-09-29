@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.requests.GatewayIntent
 
 open class DiscordBot(private val token: String): ListenerAdapter() {
@@ -32,7 +33,10 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
 
     init {
         jda.upsertCommand("ping", "just a ping pong command").queue()
-        jda.upsertCommand("connect", "Start integration").queue()
+        jda.upsertCommand("connect", "Start integration")
+            .addSubcommands(SubcommandData("cancel", "Used for cancelling the registration."))
+            .addSubcommands(SubcommandData("start", "For stating registration."))
+            .queue()
         DiscordObject.setJDAInstance(jda)
     }
 
@@ -46,13 +50,40 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
         }
 
         if(event.name == "connect"){
+
             if (event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))){
-                val ac = AccountConnection()
-                val token = ac.registerToken(event.member!!.idLong)
-                event.reply("Generating token...")
-                    .setEphemeral(true)
-                    .flatMap { event.hook.editOriginal("Token generated." +
-                            " Please execute `/connect $token` in server.") }.queue()
+                val discordID = event.member!!.idLong
+                val ac = AccountConnection(discordID)
+                if (event.subcommandName.equals("start", ignoreCase = true)) {
+                    if (ac.isRegisterInProgress()) {
+                        event.reply(
+                            "You are already in the registration process!" +
+                                    " Please execute `/connect ${ac.getTokenFromDiscordID()}` in minecraft server. or type `/connect cancel` in discord to cancel registration."
+                        )
+                            .setEphemeral(true)
+                            .queue()
+                        return
+                    }
+
+                    val token = ac.registerToken()
+                    event.reply("Generating token...")
+                        .setEphemeral(true)
+                        .flatMap {
+                            event.hook.editOriginal(
+                                "Token generated," +
+                                        " Please execute `/connect $token` in minecraft server."
+                            )
+                        }.queue()
+                }
+
+                if (event.subcommandName.equals("cancel", ignoreCase = true)){
+                    if (!ac.isRegisterInProgress()){
+                        event.reply("Registration is not started! to start, type `/connect start`").setEphemeral(true).queue()
+                        return
+                    }
+                    ac.removeToken()
+                    event.reply("Registration cancelled.").setEphemeral(true).queue()
+                }
             } else{
                 event.reply("This command only can executed from admins!")
                     .setEphemeral(true).queue()
