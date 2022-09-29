@@ -27,10 +27,12 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
             response = statement.executeQuery("SELECT * FROM $integrationTableName WHERE discord_id = $discordID")
+            response.next()
             result["discord_id"] = response.getLong("discord_id").toString()
             result["minecraft_uuid"] = response.getString("minecraft_uuid")
             result["auth_id"] = response.getString("auth_id")
         } catch (e: Exception){
+            e.printStackTrace()
             response?.close()
             statement?.close()
             connection?.close()
@@ -95,7 +97,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.prepareStatement("UPDATE $integrationTableName SET auth_id = \'?\' WHERE discord_id = ?")
+            statement = connection.prepareStatement("UPDATE $integrationTableName SET auth_id = ? WHERE discord_id = ?")
             statement.setString(1, authID)
             statement.setLong(2, discordID)
             response = statement.executeUpdate()
@@ -108,7 +110,6 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         }
         return response
     }
-
     override fun removeDiscordIntegrationInformation(discordID: Long): Int{
         var connection: Connection? = null
         var statement: PreparedStatement? = null
@@ -117,7 +118,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.prepareStatement("DELETE FROM $integrationTableName WHERE discord_id = \'?\'")
+            statement = connection.prepareStatement("DELETE FROM $integrationTableName WHERE discord_id = ?")
             statement.setLong(1, discordID)
             response = statement.executeUpdate()
         } catch (e: Exception){
@@ -141,6 +142,8 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
             response = statement.executeQuery("SELECT * FROM $authDataTableName WHERE auth_id = $authID")
+            response.next()
+            result["auth_id"] = response.getString("auth_id")
             result["2fa_secret_key"] = response.getString("2fa_secret_key")
             result["2fa_backup_codes"] = response.getString("2fa_backup_codes")
         } catch (e: Exception){

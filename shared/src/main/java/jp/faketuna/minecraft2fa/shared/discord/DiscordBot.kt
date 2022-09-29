@@ -6,6 +6,7 @@ import com.google.zxing.qrcode.QRCodeWriter
 import jp.faketuna.minecraft2fa.shared.auth.AccountConnection
 import jp.faketuna.minecraft2fa.shared.auth.AuthManager
 import jp.faketuna.minecraft2fa.shared.config.Config
+import jp.faketuna.minecraft2fa.shared.manager.SharedPluginInstanceManager
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -133,8 +134,9 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                         return
                     }
                     val secretKey = authManager.generateSecretKey()
-                    authManager.addRegisteringUser(discordID, secretKey)
-                    val optAuthURI = "otpauth://totp/Minecraft2faAuthentication:${event.member!!.effectiveName}?secret=$secretKey&issuer=minecraft2fa"
+                    authManager.setBackupCodes(discordID, secretKey)
+                    authManager.addRegisteringUser(discordID, secretKey.key)
+                    val optAuthURI = "otpauth://totp/Minecraft2faAuthentication:${event.member!!.effectiveName}?secret=${secretKey.key}&issuer=minecraft2fa"
 
                     try{
                         val writer = QRCodeWriter()
@@ -142,7 +144,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                         val image = MatrixToImageWriter.toBufferedImage(bitMatrix)
                         val bos = ByteArrayOutputStream()
                         ImageIO.write(image, "png", bos)
-                        event.reply("Read QR code with Any topt compatible authenticator or paste key `$secretKey`.")
+                        event.reply("Read QR code with Any topt compatible authenticator or paste key `${secretKey.key}`.")
                             .addFiles(FileUpload.fromData(bos.toByteArray(), "qr.png"))
                             .setEphemeral(true)
                             .setActionRow(Button.primary("2fa-verification-ready", "Verify code"))
@@ -201,10 +203,17 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
         if (event.modalId == "2fa-verification-modal"){
             val verificationCode = event.getValue("2fa-verification-input")!!.asString.toInt()
             val authManager = AuthManager()
-            if (authManager.isValidCode(authManager.getSecretKeyFromRegisteringUser(event.member!!.idLong).toString(), verificationCode)){
-                event.reply("Code verified and registered 2fa!")
+            val discordID = event.member!!.idLong
+            val secretKey = authManager.getSecretKeyFromRegisteringUser(discordID).toString()
+            if (authManager.isValidCode(secretKey, verificationCode)){
+                event.reply("Code verified and registered 2fa!\n Save these backup codes! this require if you lost access the registered device. \n ${authManager.getBackupCodes(discordID)}")
                     .setEphemeral(true)
                     .queue()
+                val mysql = SharedPluginInstanceManager().getMySQLInstance()
+                val authID = authManager.generateHash(discordID, secretKey)
+                mysql.add2FAInformation(authID, secretKey, "${authManager.getBackupCodes(discordID)}")
+                mysql.updateDiscordIntegrationAuthID(discordID, authID)
+                authManager.removeRegisteringUser(discordID)
             } else{
                 event.reply("Invalid code! Please try again.")
                     .setEphemeral(true)
@@ -219,7 +228,9 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                 .queue()
         }
         if(event.message.contentRaw == "check"){
-            event.message.reply("${AccountConnection.VerificationObject.getTokenMap()}")
+            event.message.reply("${AccountConnection.VerificationObject.getTokenMap()}\n" +
+                    AuthManager().generateHash(420348239, "fajl;sdfajlkd")
+            )
                 .queue()
         }
     }

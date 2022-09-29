@@ -3,6 +3,8 @@ package jp.faketuna.minecraft2fa.shared.auth
 import com.warrenstrange.googleauth.GoogleAuthenticator
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey
 import jp.faketuna.minecraft2fa.shared.manager.SharedPluginInstanceManager
+import java.math.BigInteger
+import java.security.MessageDigest
 
 class AuthManager {
     private val manager = SharedPluginInstanceManager()
@@ -12,6 +14,7 @@ class AuthManager {
 
     object Manager{
         private val registeringUsers = HashMap<Long, String>()
+        private val registeringUsersBackupCode = HashMap<Long, List<Int>>()
 
         fun addRegisteringUser(discordID: Long, token: String){
             registeringUsers[discordID] = token
@@ -29,6 +32,14 @@ class AuthManager {
             if (registeringUsers.keys.contains(discordID)) return true
             return false
         }
+
+        fun setUserBackupCode(discordID: Long ,codes: List<Int>){
+            this.registeringUsersBackupCode[discordID] = codes
+        }
+
+        fun getUserBackupCode(discordID: Long): List<Int>?{
+            return this.registeringUsersBackupCode[discordID]
+        }
     }
 
     fun isUserHas2FA(discordID: Long): Boolean{
@@ -45,10 +56,14 @@ class AuthManager {
     }
 
     fun isUserHasIntegration(discordID: Long): Boolean{
+        val userInfo: HashMap<String, String?>
         try{
-            mysql.getDiscordIntegrationInformation(discordID)
+            userInfo = mysql.getDiscordIntegrationInformation(discordID)
         } catch (e: Exception){
             return false
+        }
+        for (map in userInfo){
+            if (map.key == "discord_id" && map.value == "$discordID") return true
         }
         return true
     }
@@ -69,18 +84,27 @@ class AuthManager {
         return Manager.isUserRegisteringProgress(discordID)
     }
 
-    fun generateSecretKey(): String{
+    fun generateSecretKey(): GoogleAuthenticatorKey{
         key = gAuth.createCredentials()
-        return key.key
+        return key
     }
 
-    fun getBackupCodes(): List<Int>?{
-        if (!this::key.isInitialized) return null
-        return key.scratchCodes
+    fun setBackupCodes(discordID: Long, key: GoogleAuthenticatorKey){
+        Manager.setUserBackupCode(discordID, key.scratchCodes)
+    }
+
+    fun getBackupCodes(discordID: Long): List<Int>?{
+        return Manager.getUserBackupCode(discordID)
     }
 
     fun isValidCode(secretKey: String, verificationCode: Int): Boolean{
         return gAuth.authorize(secretKey, verificationCode)
+    }
+
+    fun generateHash(discordID: Long, secretKey: String): String{
+        val sha3512 = MessageDigest.getInstance("SHA3-512")
+        val result = sha3512.digest("$discordID-$secretKey".toByteArray())
+        return String.format("%040x", BigInteger(1, result))
     }
 
 }
