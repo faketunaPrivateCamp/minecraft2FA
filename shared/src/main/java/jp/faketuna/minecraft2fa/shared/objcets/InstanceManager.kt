@@ -3,6 +3,7 @@ package jp.faketuna.minecraft2fa.shared.objcets
 import jp.faketuna.minecraft2fa.shared.config.ConfigManager
 import jp.faketuna.minecraft2fa.shared.config.PaperConfigManager
 import jp.faketuna.minecraft2fa.shared.config.WaterfallConfigManager
+import jp.faketuna.minecraft2fa.shared.database.MySQL
 import jp.faketuna.minecraft2fa.shared.discord.DiscordBot
 import net.md_5.bungee.api.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
@@ -50,4 +51,22 @@ interface InstanceManager {
      * @return Boolean
      */
     fun isConfigManagerInitialized(): Boolean
+
+    /**
+     * Get a MySQL instance
+     * @return MySQL Instance
+     */
+    fun getMySQLInstance(): MySQL
+
+    /**
+     * Set a MySQL instance
+     * @param MySQL
+     */
+    fun setMySQLInstance(mySQL: MySQL)
+
+    /**
+     * Check MySQL instance is initialized
+     * @return Boolean
+     */
+    fun isMySQLInstanceInitialized(): Boolean
 }

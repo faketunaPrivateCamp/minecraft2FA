@@ -23,28 +23,26 @@ bukkit {
     author = "ft"
     prefix = "Minecraft2FA"
 
-    /*
+
     commands {
-        register("command") {
-            description = "Just a command!"
-            aliases = listOf("cmd")
-            permission = "command.children"
-            usage = "/command"
-            permissionMessage = "no perm"
+        register("connectdiscord") {
+            description = "Used for integrating discord and minecraftaccount"
+            permission = "mc2fa.connect"
+            usage = "/connect"
+            permissionMessage = "You don't have permission to perform this command."
         }
     }
 
 
     permissions {
-        register("command.*") {
-            children = listOf("ktt.children")
+        register("mc2fa.*") {
+            children = listOf("mc2fa.connect")
 
         }
 
-        register("command.children") {
-            description = "the childlen command"
+        register("mc2fa.connect") {
+            description = "Discord integration command"
             default = BukkitPluginDescription.Permission.Default.OP
         }
     }
-    */
 }
