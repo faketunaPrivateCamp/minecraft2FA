@@ -2,7 +2,7 @@ package jp.faketuna.minecraft2fa.shared.auth
 
 import kotlin.collections.HashMap
 
-class AccountConnection {
+class AccountConnection(private val discordID: Long) {
     object VerificationObject{
         private var tokenMap = HashMap<String, Long>()
 
@@ -24,7 +24,7 @@ class AccountConnection {
         return false
     }
 
-    fun registerToken(discordID: Long): String{
+    fun registerToken(): String{
         val alphabet = ('a'..'z') + ('A'..'Z') + ('0'..'9')
         val len = 12
         val token = (1..len).map { alphabet.random() }.joinToString("")
@@ -32,15 +32,33 @@ class AccountConnection {
         return token
     }
 
+    fun getTokenFromDiscordID(): String?{
+        for (map in VerificationObject.getTokenMap()){
+            if (map.value == discordID){
+                return map.key
+            }
+        }
+        return null
+    }
+
     fun removeToken(token: String){
         VerificationObject.getTokenMap().remove(token)
     }
 
-    fun removeToken(discordID: Long){
+    fun removeToken(){
         for (map in VerificationObject.getTokenMap()){
             if (map.value == discordID){
                 VerificationObject.getTokenMap().remove(map.key)
             }
         }
+    }
+
+    fun isRegisterInProgress(): Boolean{
+        for (map in VerificationObject.getTokenMap()){
+            if (map.value == discordID){
+                return true
+            }
+        }
+        return false
     }
 }
