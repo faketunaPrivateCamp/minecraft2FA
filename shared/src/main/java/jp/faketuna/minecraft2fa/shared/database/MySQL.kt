@@ -258,11 +258,13 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         var connection: Connection? = null
         var meta: DatabaseMetaData? = null
         var response: ResultSet? = null
+        val resp: Boolean
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             meta = connection.metaData
             response = meta.getTables(null, null, integrationTableName, null)
+            resp = response.next()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -270,7 +272,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response?.close()
             connection?.close()
         }
-        if(response!!.next()){
+        if(resp){
             return true
         }
         return false
@@ -280,11 +282,13 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         var connection: Connection? = null
         var meta: DatabaseMetaData? = null
         var response: ResultSet? = null
+        val resp: Boolean
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             meta = connection.metaData
             response = meta.getTables(null, null, authDataTableName, null)
+            resp = response.next()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -292,7 +296,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             response?.close()
             connection?.close()
         }
-        if(response!!.next()){
+        if(resp){
             return true
         }
         return false
