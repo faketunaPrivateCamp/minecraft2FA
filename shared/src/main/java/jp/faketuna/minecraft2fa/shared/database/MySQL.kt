@@ -99,6 +99,25 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         }
     }
 
+    override fun removeDiscordIntegrationInformation(discordID: Long) {
+        var connection: Connection? = null
+        var statement: Statement? = null
+        var response: ResultSet? = null
+
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            statement = connection.createStatement()
+            response = statement.executeQuery("DELETE FROM $integrationTableName WHERE discord_id = \'$discordID\'")
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            statement?.close()
+            connection?.close()
+        }
+    }
+
     override fun get2FAInformation(authID: String): HashMap<String, String?>?{
         var connection: Connection? = null
         var statement: Statement? = null
@@ -174,6 +193,25 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
             response = statement.executeQuery("UPDATE $authDataTableName SET 2fa_backup_codes = \'$backupCodes\' WHERE auth_id = $authID")
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            statement?.close()
+            connection?.close()
+        }
+    }
+
+    override fun remove2FAInformation(authID: String) {
+        var connection: Connection? = null
+        var statement: Statement? = null
+        var response: ResultSet? = null
+
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            statement = connection.createStatement()
+            response = statement.executeQuery("DELETE FROM $authDataTableName WHERE auth_id = \'$authID\'")
         } catch (e: Exception){
             e.printStackTrace()
         } finally {

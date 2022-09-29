@@ -36,6 +36,12 @@ interface Database {
     fun updateDiscordIntegrationAuthID(discordID: Long, authID: String)
 
     /**
+     * Removes Discord integration information from Discord integration database
+     * @param discordID
+     */
+    fun removeDiscordIntegrationInformation(discordID: Long)
+
+    /**
      * Get a 2fa information from Discord integration database
      * @param authID String
      * @return HashMap<String, String?>
@@ -63,6 +69,12 @@ interface Database {
      * @param backupCodes String
      */
     fun update2FABackupCodeInformation(authID: String, backupCodes: String)
+
+    /**
+     * Removes 2fa information from Discord integration database
+     * @param authID
+     */
+    fun remove2FAInformation(authID: String)
 
     /**
      * Checks Database are exists
