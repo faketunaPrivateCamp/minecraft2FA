@@ -126,6 +126,63 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         return result
     }
 
+    override fun add2FAInformation(authID: String, secretKey: String, backupCodes: String) {
+        var connection: Connection? = null
+        var statement: Statement? = null
+        var response: ResultSet? = null
+
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            statement = connection.createStatement()
+            response = statement.executeQuery("INSERT INTO $authDataTableName(auth_id, 2fa_secret_key, 2fa_backup_codes) VALUES($authID, $secretKey, $backupCodes)")
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            statement?.close()
+            connection?.close()
+        }
+    }
+
+    override fun update2FASecretKeyInformation(authID: String, secretKey: String) {
+        var connection: Connection? = null
+        var statement: Statement? = null
+        var response: ResultSet? = null
+
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            statement = connection.createStatement()
+            response = statement.executeQuery("UPDATE $authDataTableName SET 2fa_secret_key = \'$secretKey\' WHERE auth_id = $authID")
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            statement?.close()
+            connection?.close()
+        }
+    }
+
+    override fun update2FABackupCodeInformation(authID: String, backupCodes: String) {
+        var connection: Connection? = null
+        var statement: Statement? = null
+        var response: ResultSet? = null
+
+
+        try{
+            connection = DriverManager.getConnection(address, user, password)
+            statement = connection.createStatement()
+            response = statement.executeQuery("UPDATE $authDataTableName SET 2fa_backup_codes = \'$backupCodes\' WHERE auth_id = $authID")
+        } catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            response?.close()
+            statement?.close()
+            connection?.close()
+        }
+    }
+
     override fun isDatabaseExists(): Boolean {
         var connection: Connection? = null
 
