@@ -4,6 +4,7 @@ import jp.faketuna.minecraft2fa.shared.objcets.Database
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.DriverManager
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Statement
@@ -45,14 +46,16 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
     override fun addDiscordIntegrationInformation(discordID: Long, minecraftUUID: UUID){
         var connection: Connection? = null
-        var statement: Statement? = null
+        var statement: PreparedStatement? = null
         val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeUpdate("INSERT INTO $integrationTableName(discord_id, minecraft_uuid) VALUES($discordID, $minecraftUUID)")
+            statement = connection.prepareStatement("INSERT INTO $integrationTableName(discord_id, minecraft_uuid) VALUES(?, ?)")
+            statement.setLong(1, discordID)
+            statement.setString(2, minecraftUUID.toString())
+            response = statement.executeUpdate()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -64,14 +67,16 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
     override fun updateDiscordIntegrationMinecraftUUID(discordID: Long, minecraftUUID: UUID){
         var connection: Connection? = null
-        var statement: Statement? = null
+        var statement: PreparedStatement? = null
         val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeUpdate("UPDATE $integrationTableName SET minecraft_uuid = \'$minecraftUUID\' WHERE discord_id = $discordID")
+            statement = connection.prepareStatement("UPDATE $integrationTableName SET minecraft_uuid = \'?\' WHERE discord_id = ?")
+            statement.setString(1, minecraftUUID.toString())
+            statement.setLong(2, discordID)
+            response = statement.executeUpdate()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -83,14 +88,16 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
     override fun updateDiscordIntegrationAuthID(discordID: Long, authID: String){
         var connection: Connection? = null
-        var statement: Statement? = null
+        var statement: PreparedStatement? = null
         val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeUpdate("UPDATE $integrationTableName SET auth_id = \'$authID\' WHERE discord_id = $discordID")
+            statement = connection.prepareStatement("UPDATE $integrationTableName SET auth_id = \'?\' WHERE discord_id = ?")
+            statement.setString(1, authID)
+            statement.setLong(2, discordID)
+            response = statement.executeUpdate()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -102,14 +109,15 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
     override fun removeDiscordIntegrationInformation(discordID: Long) {
         var connection: Connection? = null
-        var statement: Statement? = null
+        var statement: PreparedStatement? = null
         val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeUpdate("DELETE FROM $integrationTableName WHERE discord_id = \'$discordID\'")
+            statement = connection.prepareStatement("DELETE FROM $integrationTableName WHERE discord_id = \'?\'")
+            statement.setLong(1, discordID)
+            response = statement.executeUpdate()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -148,14 +156,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
     override fun add2FAInformation(authID: String, secretKey: String, backupCodes: String) {
         var connection: Connection? = null
-        var statement: Statement? = null
+        var statement: PreparedStatement? = null
         val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeUpdate("INSERT INTO $authDataTableName(auth_id, 2fa_secret_key, 2fa_backup_codes) VALUES($authID, $secretKey, $backupCodes)")
+            statement = connection.prepareStatement("INSERT INTO $authDataTableName(auth_id, 2fa_secret_key, 2fa_backup_codes) VALUES(?, ?, ?)")
+            statement.setString(1, authID)
+            statement.setString(2, secretKey)
+            statement.setString(3, backupCodes)
+            response = statement.executeUpdate()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -167,14 +178,16 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
     override fun update2FASecretKeyInformation(authID: String, secretKey: String) {
         var connection: Connection? = null
-        var statement: Statement? = null
+        var statement: PreparedStatement? = null
         val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeUpdate("UPDATE $authDataTableName SET 2fa_secret_key = \'$secretKey\' WHERE auth_id = $authID")
+            statement = connection.prepareStatement("UPDATE $authDataTableName SET 2fa_secret_key = \'?\' WHERE auth_id = ?")
+            statement.setString(1, secretKey)
+            statement.setString(2, authID)
+            response = statement.executeUpdate()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -186,14 +199,16 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
     override fun update2FABackupCodeInformation(authID: String, backupCodes: String) {
         var connection: Connection? = null
-        var statement: Statement? = null
+        var statement: PreparedStatement? = null
         val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeUpdate("UPDATE $authDataTableName SET 2fa_backup_codes = \'$backupCodes\' WHERE auth_id = $authID")
+            statement = connection.prepareStatement("UPDATE $authDataTableName SET 2fa_backup_codes = \'?\' WHERE auth_id = ?")
+            statement.setString(1, backupCodes)
+            statement.setString(2, authID)
+            response = statement.executeUpdate()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
@@ -205,14 +220,15 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
 
     override fun remove2FAInformation(authID: String) {
         var connection: Connection? = null
-        var statement: Statement? = null
+        var statement: PreparedStatement? = null
         val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeUpdate("DELETE FROM $authDataTableName WHERE auth_id = \'$authID\'")
+            statement = connection.prepareStatement("DELETE FROM $authDataTableName WHERE auth_id = \'?\'")
+            statement.setString(1, authID)
+            response = statement.executeUpdate()
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()

@@ -1,5 +1,6 @@
 package jp.faketuna.minecraft2fa.paper.commands
 
+import jp.faketuna.minecraft2fa.paper.manager.PluginInstanceManager
 import jp.faketuna.minecraft2fa.shared.auth.AccountConnection
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -23,14 +24,13 @@ class ConnectCommand: CommandExecutor {
                 val ac = AccountConnection(0)
                 if (ac.isValidToken(args[0])){
                     // TODO SQLに書き込む作業
-                    /*try{
-                        val sql = MySQL("", "", "")
+                    try{
+                        val sql = PluginInstanceManager().getMySQLInstance()
                         sql.addDiscordIntegrationInformation(ac.getDiscordIDFromToken(args[0]), p.uniqueId)
                     } catch (e: Exception){
                         p.sendMessage("Exception occurred! Please contact to server administrator!")
                         return true
                     }
-                    */
 
                     ac.removeToken(args[0])
                     p.sendMessage("Your account has been integrated!")
