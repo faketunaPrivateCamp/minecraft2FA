@@ -48,12 +48,34 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
         return pluginConfig
     }
 
+    fun getMySQLServerAddress(): String{
+        return Config.getMySQLServerAddress()
+    }
+
+    fun getMySQLUserID(): String{
+        return Config.getMySQLUserID()
+    }
+
+    fun getMySQLUserPassword(): String{
+        return Config.getMySQLUserPassword()
+    }
+
     private fun writeDefault(){
-        if (!pluginConfig.contains("token")) {
-            pluginConfig.set("token", "justpasteyourtoken32234235lk34j5lk")
+        val conf = getConfig()
+        if (!conf.contains("token")){
+            conf.set("token", "justpasteyourtoken32234235lk34j5lk")
         }
-        if (!pluginConfig.contains("connectableRoleID")) {
-            pluginConfig.set("connectableRoleID", 209348572902897)
+        if (!conf.contains("connectableRoleID")) {
+            conf.set("connectableRoleID", "209348572902897")
+        }
+        if (!conf.contains("mysql.serverAddress")){
+            conf.set("mysql.serverAddress", "127.0.0.1")
+        }
+        if (!conf.contains("mysql.userID")){
+            conf.set("mysql.userID", "")
+        }
+        if (!conf.contains("mysql.userPassword")){
+            conf.set("mysql.userPassword", "")
         }
         saveConfig(pluginConfig)
     }
