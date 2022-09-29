@@ -101,11 +101,6 @@ interface Database {
     fun is2FATableExists(): Boolean
 
     /**
-     * Create a database for Discord integration
-     */
-    fun createDiscordIntegrationDatabase()
-
-    /**
      * Creates a table for Discord integration
      */
     fun createDiscordIntegrationTable()

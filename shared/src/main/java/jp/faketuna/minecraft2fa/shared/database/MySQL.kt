@@ -298,26 +298,6 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         return false
     }
 
-    override fun createDiscordIntegrationDatabase() {
-        val createTableSQL = "CREATE DATABASE $databaseName"
-        var connection: Connection? = null
-        var statement: Statement? = null
-        var response: ResultSet? = null
-
-        try{
-            connection = DriverManager.getConnection(address, user, password)
-            statement = connection.createStatement()
-            response = statement.executeQuery(createTableSQL)
-        } catch (e: Exception){
-            e.printStackTrace()
-            throw SQLException()
-        } finally {
-            response?.close()
-            statement?.close()
-            connection?.close()
-        }
-    }
-
     override fun createDiscordIntegrationTable() {
         val createTableSQL: String = "CREATE TABLE $integrationTableName(" +
                 "discord_id BIGINT(18) NOT NULL, " +
