@@ -32,9 +32,8 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
 
         pluginConfig = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(configFile)
 
-        if (!exists){
-            writeDefault()
-        }
+        writeDefault()
+
         Config.setToken(pluginConfig.getString("token"))
         Config.setRoleID(pluginConfig.getLong("connectableRoleID"))
         plugin.logger.info("Config loaded.")
@@ -50,8 +49,12 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
     }
 
     private fun writeDefault(){
-        pluginConfig.set("token", "justpasteyourtoken32234235lk34j5lk")
-        pluginConfig.set("connectableRoleID", "209348572902897")
+        if (!pluginConfig.contains("token")) {
+            pluginConfig.set("token", "justpasteyourtoken32234235lk34j5lk")
+        }
+        if (!pluginConfig.contains("connectableRoleID")) {
+            pluginConfig.set("connectableRoleID", 209348572902897)
+        }
         saveConfig(pluginConfig)
     }
 
