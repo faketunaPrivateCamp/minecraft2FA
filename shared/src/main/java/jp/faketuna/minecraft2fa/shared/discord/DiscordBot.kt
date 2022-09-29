@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.requests.GatewayIntent
 
@@ -33,10 +34,15 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
 
     init {
         jda.upsertCommand("ping", "just a ping pong command").queue()
-        jda.upsertCommand("connect", "Start integration")
+        jda.upsertCommand("connect", "Discord integration command.")
             .addSubcommands(SubcommandData("cancel", "Used for cancelling the registration."))
             .addSubcommands(SubcommandData("start", "For stating registration."))
             .queue()
+        jda.upsertCommand("auth", "2 factor authentication command.")
+            .addSubcommands(SubcommandData("verify", "Verify the your minecraft session with 2fa."))
+            .addSubcommands(SubcommandData("register", "Register a 2fa for this account."))
+            .addOption(OptionType.STRING, "cancel", "Cancel a registration.")
+            .addSubcommands(SubcommandData("unregister", "Unregister a 2fa for this account."))
         DiscordObject.setJDAInstance(jda)
     }
 
@@ -50,7 +56,6 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
         }
 
         if(event.name == "connect"){
-
             if (event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))){
                 val discordID = event.member!!.idLong
                 val ac = AccountConnection(discordID)
@@ -87,6 +92,15 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
             } else{
                 event.reply("This command only can executed from admins!")
                     .setEphemeral(true).queue()
+            }
+        }
+
+        if(event.name == "auth"){
+            if (event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))){
+                if (event.subcommandName.equals("register", ignoreCase = true)){
+
+                }
+
             }
         }
 
