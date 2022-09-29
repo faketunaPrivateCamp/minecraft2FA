@@ -1,5 +1,6 @@
 package jp.faketuna.minecraft2fa.shared.discord
 
+import jp.faketuna.minecraft2fa.shared.auth.AccountConnection
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -30,6 +31,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
 
     init {
         jda.upsertCommand("ping", "just a ping pong command").queue()
+        jda.upsertCommand("connect", "Start integration").queue()
         DiscordObject.setJDAInstance(jda)
     }
 
@@ -40,6 +42,17 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                 .setEphemeral(true)
                 .flatMap { event.hook.editOriginal("Pong: ${System.currentTimeMillis() - time}") }
                 .queue()
+        }
+
+        if(event.name == "connect"){
+            if (event.member!!.roles.contains(event.member!!.guild.getRoleById(""))){
+                val ac = AccountConnection()
+                val token = ac.registerToken(event.member!!.idLong)
+                event.reply("Generating token...")
+                    .setEphemeral(true)
+                    .flatMap { event.hook.editOriginal("Token generated." +
+                            "Please execute `/connect $token` in server.") }
+            }
         }
 
         if(event.name == "test"){
