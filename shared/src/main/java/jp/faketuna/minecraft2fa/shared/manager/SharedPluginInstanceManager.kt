@@ -3,6 +3,7 @@ package jp.faketuna.minecraft2fa.shared.manager
 import jp.faketuna.minecraft2fa.shared.config.ConfigManager
 import jp.faketuna.minecraft2fa.shared.config.PaperConfigManager
 import jp.faketuna.minecraft2fa.shared.config.WaterfallConfigManager
+import jp.faketuna.minecraft2fa.shared.database.MySQL
 import jp.faketuna.minecraft2fa.shared.discord.DiscordBot
 import jp.faketuna.minecraft2fa.shared.objcets.InstanceManager
 import net.md_5.bungee.api.plugin.Plugin
@@ -12,6 +13,7 @@ open class SharedPluginInstanceManager: InstanceManager {
     object Manager{
         private lateinit var discordBot: DiscordBot
         private lateinit var configManager: ConfigManager
+        private lateinit var MySQL: MySQL
 
         fun getDiscordBotInstance(): DiscordBot{
             return this.discordBot
@@ -31,6 +33,16 @@ open class SharedPluginInstanceManager: InstanceManager {
         }
         fun isConfigManagerInitialized(): Boolean{
             return this::configManager.isInitialized
+        }
+
+        fun getMySQLInstance(): MySQL{
+            return this.MySQL
+        }
+        fun setMySQLInstance(mySQL: MySQL){
+            this.MySQL = mySQL
+        }
+        fun isMySQLInstanceInitialized(): Boolean{
+            return this::MySQL.isInitialized
         }
     }
     override fun getDiscordBotInstance(): DiscordBot {
@@ -59,5 +71,17 @@ open class SharedPluginInstanceManager: InstanceManager {
 
     override fun isConfigManagerInitialized(): Boolean {
         return Manager.isConfigManagerInitialized()
+    }
+
+    override fun getMySQLInstance(): MySQL {
+        return Manager.getMySQLInstance()
+    }
+
+    override fun setMySQLInstance(mySQL: MySQL) {
+        Manager.setMySQLInstance(mySQL)
+    }
+
+    override fun isMySQLInstanceInitialized(): Boolean {
+        return Manager.isMySQLInstanceInitialized()
     }
 }
