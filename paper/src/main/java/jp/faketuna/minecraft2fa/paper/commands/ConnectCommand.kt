@@ -14,8 +14,9 @@ class ConnectCommand: CommandExecutor {
         if (command.name.equals("connectdiscord", ignoreCase = true)){
             if (sender !is Player){
                 sender.sendMessage("This command can only executed from player!")
+                return true
             }
-            val p = sender as Player
+            val p: Player = sender
             if (args.isNullOrEmpty()){
                 p.sendMessage("Not enough arguments!")
             } else if(args.size >= 2){
@@ -23,7 +24,6 @@ class ConnectCommand: CommandExecutor {
             } else{
                 val ac = AccountConnection(0)
                 if (ac.isValidToken(args[0])){
-                    // TODO SQLに書き込む作業
                     try{
                         val sql = PluginInstanceManager().getMySQLInstance()
                         sql.addDiscordIntegrationInformation(ac.getDiscordIDFromToken(args[0]), p.uniqueId)
