@@ -119,20 +119,19 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                             .setEphemeral(true)
                             .queue()
                         return
-                    }/*
+                    }
                     if (!authManager.isUserHasIntegration(discordID)){
                         event.reply("Your not connected the minecraft with discord. Please `/connect start` in first.")
                             .setEphemeral(true)
                             .queue()
+                        return
                     }
-
-                    if (!authManager.isUserHas2FA(discordID)){
+                    if (authManager.isUserHas2FA(discordID)){
                         event.reply("Your already registered 2fa! to unregister type `/auth unregister`.")
                             .setEphemeral(true)
                             .queue()
                         return
                     }
-                    */
                     val secretKey = authManager.generateSecretKey()
                     authManager.addRegisteringUser(discordID, secretKey)
                     val optAuthURI = "otpauth://totp/Minecraft2faAuthentication:${event.member!!.effectiveName}?secret=$secretKey&issuer=minecraft2fa"
@@ -146,7 +145,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                         event.reply("Read QR code with Any topt compatible authenticator or paste key `$secretKey`.")
                             .addFiles(FileUpload.fromData(bos.toByteArray(), "qr.png"))
                             .setEphemeral(true)
-                            .setActionRow(Button.primary("ready", "Verify code"))
+                            .setActionRow(Button.primary("2fa-verification-ready", "Verify code"))
                             .queue()
                     } catch (e: Exception){
                         e.printStackTrace()
@@ -154,6 +153,19 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                             .setEphemeral(true)
                             .queue()
                     }
+                }
+
+                if (event.subcommandName.equals("cancel", ignoreCase = true)){
+                    if(!authManager.isUserRegisteringProgress(discordID)){
+                        event.reply("Your not in registering progress! if you want register please type `/auth register`.")
+                            .setEphemeral(true)
+                            .queue()
+                        return
+                    }
+                    authManager.removeRegisteringUser(discordID)
+                    event.reply("Registration cancelled.")
+                        .setEphemeral(true)
+                        .queue()
                 }
             } else{
                 event.reply("This command only can executed from admins!")
@@ -170,7 +182,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         if (!event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))) return
-        if (event.componentId == "ready"){
+        if (event.componentId == "2fa-verification-ready"){
             if (!AuthManager().isUserRegisteringProgress(event.member!!.idLong)) return
             val totpCode = TextInput.create("2fa-verification-input", "2FA authentication code", TextInputStyle.SHORT)
                 .setMinLength(6)
