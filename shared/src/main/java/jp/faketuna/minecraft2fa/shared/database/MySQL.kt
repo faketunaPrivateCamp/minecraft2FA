@@ -46,18 +46,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     override fun addDiscordIntegrationInformation(discordID: Long, minecraftUUID: UUID){
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("INSERT INTO $integrationTableName(discord_id, minecraft_uuid) VALUES($discordID, $minecraftUUID)")
+            response = statement.executeUpdate("INSERT INTO $integrationTableName(discord_id, minecraft_uuid) VALUES($discordID, $minecraftUUID)")
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -66,18 +65,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     override fun updateDiscordIntegrationMinecraftUUID(discordID: Long, minecraftUUID: UUID){
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("UPDATE $integrationTableName SET minecraft_uuid = \'$minecraftUUID\' WHERE discord_id = $discordID")
+            response = statement.executeUpdate("UPDATE $integrationTableName SET minecraft_uuid = \'$minecraftUUID\' WHERE discord_id = $discordID")
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -86,18 +84,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     override fun updateDiscordIntegrationAuthID(discordID: Long, authID: String){
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("UPDATE $integrationTableName SET auth_id = \'$authID\' WHERE discord_id = $discordID")
+            response = statement.executeUpdate("UPDATE $integrationTableName SET auth_id = \'$authID\' WHERE discord_id = $discordID")
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -106,18 +103,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     override fun removeDiscordIntegrationInformation(discordID: Long) {
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("DELETE FROM $integrationTableName WHERE discord_id = \'$discordID\'")
+            response = statement.executeUpdate("DELETE FROM $integrationTableName WHERE discord_id = \'$discordID\'")
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -153,18 +149,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     override fun add2FAInformation(authID: String, secretKey: String, backupCodes: String) {
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("INSERT INTO $authDataTableName(auth_id, 2fa_secret_key, 2fa_backup_codes) VALUES($authID, $secretKey, $backupCodes)")
+            response = statement.executeUpdate("INSERT INTO $authDataTableName(auth_id, 2fa_secret_key, 2fa_backup_codes) VALUES($authID, $secretKey, $backupCodes)")
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -173,18 +168,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     override fun update2FASecretKeyInformation(authID: String, secretKey: String) {
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("UPDATE $authDataTableName SET 2fa_secret_key = \'$secretKey\' WHERE auth_id = $authID")
+            response = statement.executeUpdate("UPDATE $authDataTableName SET 2fa_secret_key = \'$secretKey\' WHERE auth_id = $authID")
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -193,18 +187,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     override fun update2FABackupCodeInformation(authID: String, backupCodes: String) {
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("UPDATE $authDataTableName SET 2fa_backup_codes = \'$backupCodes\' WHERE auth_id = $authID")
+            response = statement.executeUpdate("UPDATE $authDataTableName SET 2fa_backup_codes = \'$backupCodes\' WHERE auth_id = $authID")
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -213,18 +206,17 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
     override fun remove2FAInformation(authID: String) {
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("DELETE FROM $authDataTableName WHERE auth_id = \'$authID\'")
+            response = statement.executeUpdate("DELETE FROM $authDataTableName WHERE auth_id = \'$authID\'")
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -307,17 +299,16 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
                 ")"
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery(createTableSQL)
+            response = statement.executeUpdate(createTableSQL)
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
@@ -332,17 +323,16 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
                 ")"
         var connection: Connection? = null
         var statement: Statement? = null
-        var response: ResultSet? = null
+        val response: Int
 
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery(createTableSQL)
+            response = statement.executeUpdate(createTableSQL)
         } catch (e: Exception){
             e.printStackTrace()
             throw SQLException()
         } finally {
-            response?.close()
             statement?.close()
             connection?.close()
         }
