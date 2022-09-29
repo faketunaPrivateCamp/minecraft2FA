@@ -29,12 +29,23 @@ class Minecraft2FA: JavaPlugin() {
             }
             try{
                 manager.setMySQLInstance(MySQL(config.getMySQLServerAddress(), config.getMySQLUserID(), config.getMySQLUserPassword()))
+                manager.getMySQLInstance().isDatabaseExists()
             } catch (e: Exception){
                 logger.info("§4Cannot connect to MySQL database! Check your config.")
                 logger.info("§4Plugin will not start.")
                 Bukkit.getPluginManager().disablePlugin(this)
                 return
             }
+            val sql = manager.getMySQLInstance()
+            if(sql.isTablesExists()){
+                if (!sql.is2FATableExists()){
+                    sql.create2FATable()
+                }
+                if (!sql.isDiscordIntegrationTableExists()){
+                    sql.createDiscordIntegrationTable()
+                }
+            }
+
             this.getCommand("connectdiscord")!!.setExecutor(ConnectCommand())
         } else {
             logger.info("Running in bungeecord mode.")

@@ -35,6 +35,16 @@ class Minecraft2FA: Plugin() {
             pluginUnloaded = true
             return
         }
+        val sql = manager.getMySQLInstance()
+        if(sql.isTablesExists()){
+            if (!sql.is2FATableExists()){
+                sql.create2FATable()
+            }
+            if (!sql.isDiscordIntegrationTableExists()){
+                sql.createDiscordIntegrationTable()
+            }
+        }
+
         manager.setPlugin(this)
     }
 

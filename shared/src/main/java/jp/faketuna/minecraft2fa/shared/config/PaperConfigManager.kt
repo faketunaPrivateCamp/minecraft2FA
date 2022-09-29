@@ -7,13 +7,17 @@ import org.bukkit.plugin.java.JavaPlugin
 class PaperConfigManager(private val plugin: JavaPlugin): Config() {
     private var token: String?
     private var roleID: Long?
+    private val config = plugin.config
 
     init {
         writeDefault()
-        token = plugin.config.getString("token")
-        roleID = plugin.config.getLong("connectableRoleID")
+        token = config.getString("token")
+        roleID = config.getLong("connectableRoleID")
         Config.setToken(token.toString())
-        Config.setRoleID(plugin.config.getLong("connectableRoleID"))
+        Config.setRoleID(config.getLong("connectableRoleID"))
+        Config.setMySQLServerAddress(config.getString("mysql.serverAddress").toString())
+        Config.setMySQLUserID(config.getString("mysql.userID").toString())
+        Config.setMySQLUserPassword(config.getString("mysql.userPassword").toString())
     }
 
     fun getToken(): String{
@@ -25,7 +29,7 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
     }
 
     fun getConfig(): FileConfiguration {
-        return plugin.config
+        return config
     }
 
     fun getMySQLServerAddress(): String{

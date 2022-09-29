@@ -36,6 +36,9 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
 
         Config.setToken(pluginConfig.getString("token"))
         Config.setRoleID(pluginConfig.getLong("connectableRoleID"))
+        Config.setMySQLServerAddress(pluginConfig.getString("mysql.serverAddress").toString())
+        Config.setMySQLUserID(pluginConfig.getString("mysql.userID").toString())
+        Config.setMySQLUserPassword(pluginConfig.getString("mysql.userPassword").toString())
         plugin.logger.info("Config loaded.")
     }
 
