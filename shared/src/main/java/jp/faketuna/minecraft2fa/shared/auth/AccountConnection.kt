@@ -41,6 +41,10 @@ class AccountConnection(private val discordID: Long) {
         return null
     }
 
+    fun getDiscordIDFromToken(token: String): Long{
+        return VerificationObject.getTokenMap()[token]!!.toLong()
+    }
+
     fun removeToken(token: String){
         VerificationObject.getTokenMap().remove(token)
     }

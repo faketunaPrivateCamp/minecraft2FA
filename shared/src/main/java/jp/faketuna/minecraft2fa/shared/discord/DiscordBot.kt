@@ -58,7 +58,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                     if (ac.isRegisterInProgress()) {
                         event.reply(
                             "You are already in the registration process!" +
-                                    " Please execute `/connect ${ac.getTokenFromDiscordID()}` in minecraft server. or type `/connect cancel` in discord to cancel registration."
+                                    " Please execute `/connectdiscord ${ac.getTokenFromDiscordID()}` in minecraft server. or type `/connect cancel` in discord to cancel registration."
                         )
                             .setEphemeral(true)
                             .queue()
@@ -71,14 +71,14 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                         .flatMap {
                             event.hook.editOriginal(
                                 "Token generated," +
-                                        " Please execute `/connect $token` in minecraft server."
+                                        " Please execute `/connectdiscord $token` in minecraft server."
                             )
                         }.queue()
                 }
 
                 if (event.subcommandName.equals("cancel", ignoreCase = true)){
                     if (!ac.isRegisterInProgress()){
-                        event.reply("Registration is not started! to start, type `/connect start`").setEphemeral(true).queue()
+                        event.reply("Registration is not started! to start, type `/connectdiscord start`").setEphemeral(true).queue()
                         return
                     }
                     ac.removeToken()

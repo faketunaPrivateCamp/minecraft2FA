@@ -1,5 +1,6 @@
 package jp.faketuna.minecraft2fa.paper
 
+import jp.faketuna.minecraft2fa.paper.commands.ConnectCommand
 import jp.faketuna.minecraft2fa.paper.discord.Bot
 import jp.faketuna.minecraft2fa.paper.manager.PluginInstanceManager
 import jp.faketuna.minecraft2fa.shared.config.ConfigManager
@@ -23,6 +24,7 @@ class Minecraft2FA: JavaPlugin() {
                 Bukkit.getPluginManager().disablePlugin(this)
                 return
             }
+            this.getCommand("connectdiscord")!!.setExecutor(ConnectCommand())
         }
         manager.setPlugin(this)
     }
