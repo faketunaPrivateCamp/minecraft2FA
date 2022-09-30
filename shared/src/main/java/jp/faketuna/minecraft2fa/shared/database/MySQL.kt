@@ -141,7 +141,7 @@ class MySQL(private val connectionAddress: String, private val user: String, pri
         try{
             connection = DriverManager.getConnection(address, user, password)
             statement = connection.createStatement()
-            response = statement.executeQuery("SELECT * FROM $authDataTableName WHERE auth_id = $authID")
+            response = statement.executeQuery("SELECT * FROM $authDataTableName WHERE auth_id = \'$authID\'")
             response.next()
             result["auth_id"] = response.getString("auth_id")
             result["2fa_secret_key"] = response.getString("2fa_secret_key")

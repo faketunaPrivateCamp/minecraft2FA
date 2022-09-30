@@ -116,19 +116,19 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                 val authManager = AuthManager()
                 if (event.subcommandName.equals("register", ignoreCase = true)){
                     if(authManager.isUserRegisteringProgress(discordID)){
-                        event.reply("Your in registering progress! if you want cancel please type `/auth cancel`.")
+                        event.reply("You are in registering progress! if you want cancel please type `/auth cancel`.")
                             .setEphemeral(true)
                             .queue()
                         return
                     }
                     if (!authManager.isUserHasIntegration(discordID)){
-                        event.reply("Your not connected the minecraft with discord. Please `/connect start` in first.")
+                        event.reply("You are not connected the minecraft with discord. Please `/connect start` in first.")
                             .setEphemeral(true)
                             .queue()
                         return
                     }
                     if (authManager.isUserHas2FA(discordID)){
-                        event.reply("Your already registered 2fa! to unregister type `/auth unregister`.")
+                        event.reply("You are already registered 2fa!\n If you want unregister type `/auth unregister` or want verify type `/auth verify`.")
                             .setEphemeral(true)
                             .queue()
                         return
@@ -147,7 +147,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                         event.reply("Read QR code with Any topt compatible authenticator or paste key `${secretKey.key}`.")
                             .addFiles(FileUpload.fromData(bos.toByteArray(), "qr.png"))
                             .setEphemeral(true)
-                            .setActionRow(Button.primary("2fa-verification-ready", "Verify code"))
+                            .setActionRow(Button.primary("2fa-verification-register-ready", "Verify code"))
                             .queue()
                     } catch (e: Exception){
                         e.printStackTrace()
@@ -159,7 +159,7 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
 
                 if (event.subcommandName.equals("cancel", ignoreCase = true)){
                     if(!authManager.isUserRegisteringProgress(discordID)){
-                        event.reply("Your not in registering progress! if you want register please type `/auth register`.")
+                        event.reply("You are not in registering progress! if you want register please type `/auth register`.")
                             .setEphemeral(true)
                             .queue()
                         return
@@ -169,6 +169,39 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                         .setEphemeral(true)
                         .queue()
                 }
+
+                if (event.subcommandName.equals("verify", ignoreCase = true)){
+                    if(authManager.isUserRegisteringProgress(discordID)){
+                        event.reply("You are in registering progress! if you want cancel please type `/auth cancel`.")
+                            .setEphemeral(true)
+                            .queue()
+                        return
+                    }
+                    if (!authManager.isUserHasIntegration(discordID)){
+                        event.reply("You are not connected the minecraft with discord. Please `/connect start` in first.")
+                            .setEphemeral(true)
+                            .queue()
+                        return
+                    }
+                    if (!authManager.isUserHas2FA(discordID)){
+                        event.reply("You are not registered 2fa! Please register 2fa first! type `/auth register`.")
+                            .setEphemeral(true)
+                            .queue()
+                        return
+                    }
+
+                    val totpCode = TextInput.create("2fa-verification-verify-input", "2FA authentication code", TextInputStyle.SHORT)
+                        .setMinLength(6)
+                        .setMaxLength(6)
+                        .setRequired(true)
+                        .build()
+                    val modal = Modal.create("2fa-verification-verify-modal", "Enter 2FA code shown in your authenticator!")
+                        .addActionRows(ActionRow.of(totpCode))
+                        .build()
+                    event.replyModal(modal).queue()
+                }
+
+
             } else{
                 event.reply("This command only can executed from admins!")
                     .setEphemeral(true).queue()
@@ -184,14 +217,14 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         if (!event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))) return
-        if (event.componentId == "2fa-verification-ready"){
+        if (event.componentId == "2fa-verification-register-ready"){
             if (!AuthManager().isUserRegisteringProgress(event.member!!.idLong)) return
-            val totpCode = TextInput.create("2fa-verification-input", "2FA authentication code", TextInputStyle.SHORT)
+            val totpCode = TextInput.create("2fa-verification-register-input", "2FA authentication code", TextInputStyle.SHORT)
                 .setMinLength(6)
                 .setMaxLength(6)
                 .setRequired(true)
                 .build()
-            val modal = Modal.create("2fa-verification-modal", "Enter 2FA code shown in your authenticator!")
+            val modal = Modal.create("2fa-verification-register-modal", "Enter 2FA code shown in your authenticator!")
                 .addActionRows(ActionRow.of(totpCode))
                 .build()
             event.replyModal(modal).queue()
@@ -200,8 +233,8 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
         if (!event.member!!.roles.contains(event.member!!.guild.getRoleById(Config.Config.getRoleID()))) return
-        if (event.modalId == "2fa-verification-modal"){
-            val verificationCode = event.getValue("2fa-verification-input")!!.asString.toInt()
+        if (event.modalId == "2fa-verification-register-modal"){
+            val verificationCode = event.getValue("2fa-verification-register-input")!!.asString.toInt()
             val authManager = AuthManager()
             val discordID = event.member!!.idLong
             val secretKey = authManager.getSecretKeyFromRegisteringUser(discordID).toString()
@@ -214,6 +247,24 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                 mysql.add2FAInformation(authID, secretKey, "${authManager.getBackupCodes(discordID)}")
                 mysql.updateDiscordIntegrationAuthID(discordID, authID)
                 authManager.removeRegisteringUser(discordID)
+            } else{
+                event.reply("Invalid code! Please try again.")
+                    .setEphemeral(true)
+                    .queue()
+            }
+        }
+
+        if (event.modalId == "2fa-verification-verify-modal"){
+            val verificationCode = event.getValue("2fa-verification-verify-input")!!.asString.toInt()
+            val authManager = AuthManager()
+            val mysql = SharedPluginInstanceManager().getMySQLInstance()
+            val discordID = event.member!!.idLong
+            val secretKey = mysql.get2FAInformation(mysql.getDiscordIntegrationInformation(discordID)["auth_id"].toString())["2fa_secret_key"].toString()
+            if (authManager.isValidCode(secretKey, verificationCode)){
+                event.reply("Code verified! You can now use admin command in server!")
+                    .setEphemeral(true)
+                    .queue()
+                // TODO Pluginメッセージング処理。
             } else{
                 event.reply("Invalid code! Please try again.")
                     .setEphemeral(true)
