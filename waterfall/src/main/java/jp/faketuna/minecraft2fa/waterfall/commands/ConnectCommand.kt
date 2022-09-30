@@ -7,7 +7,7 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Command
 
-class ConnectCommand: Command("connectdiscord") {
+class ConnectCommand: Command("connectdiscord", "mc2fa.connect") {
     override fun execute(sender: CommandSender?, args: Array<out String>?) {
         if (sender !is ProxiedPlayer){
             sender!!.sendMessage(TextComponent("This command can only executed from player!"))

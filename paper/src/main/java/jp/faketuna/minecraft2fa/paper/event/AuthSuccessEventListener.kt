@@ -1,5 +1,6 @@
 package jp.faketuna.minecraft2fa.paper.event
 
+import jp.faketuna.minecraft2fa.shared.manager.AuthInformationManager
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -9,6 +10,6 @@ class AuthSuccessEventListener: Listener {
 
     @EventHandler
     fun onAuthSuccess(event: AuthSuccessEvent){
-        Bukkit.broadcast(Component.text("Auth success: ${event.uuid}"))
+        AuthInformationManager().addAuthorizedUser(event.uuid)
     }
 }
