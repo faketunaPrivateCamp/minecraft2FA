@@ -2,6 +2,7 @@ package jp.faketuna.minecraft2fa.paper
 
 import jp.faketuna.minecraft2fa.paper.commands.ConnectCommand
 import jp.faketuna.minecraft2fa.paper.discord.Bot
+import jp.faketuna.minecraft2fa.paper.event.AuthSuccessEventListener
 import jp.faketuna.minecraft2fa.paper.manager.PluginInstanceManager
 import jp.faketuna.minecraft2fa.shared.config.ConfigManager
 import jp.faketuna.minecraft2fa.shared.database.MySQL
@@ -45,7 +46,7 @@ class Minecraft2FA: JavaPlugin() {
                     sql.createDiscordIntegrationTable()
                 }
             }
-
+            Bukkit.getPluginManager().registerEvents(AuthSuccessEventListener(), this)
             this.getCommand("connectdiscord")!!.setExecutor(ConnectCommand())
         } else {
             logger.info("Running in bungeecord mode.")

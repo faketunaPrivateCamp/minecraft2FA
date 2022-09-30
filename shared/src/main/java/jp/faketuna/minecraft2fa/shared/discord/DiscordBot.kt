@@ -253,24 +253,6 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                     .queue()
             }
         }
-
-        if (event.modalId == "2fa-verification-verify-modal"){
-            val verificationCode = event.getValue("2fa-verification-verify-input")!!.asString.toInt()
-            val authManager = AuthManager()
-            val mysql = SharedPluginInstanceManager().getMySQLInstance()
-            val discordID = event.member!!.idLong
-            val secretKey = mysql.get2FAInformation(mysql.getDiscordIntegrationInformation(discordID)["auth_id"].toString())["2fa_secret_key"].toString()
-            if (authManager.isValidCode(secretKey, verificationCode)){
-                event.reply("Code verified! You can now use admin command in server!")
-                    .setEphemeral(true)
-                    .queue()
-                // TODO Pluginメッセージング処理。
-            } else{
-                event.reply("Invalid code! Please try again.")
-                    .setEphemeral(true)
-                    .queue()
-            }
-        }
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {

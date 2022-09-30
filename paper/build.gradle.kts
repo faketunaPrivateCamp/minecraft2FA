@@ -1,5 +1,4 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
-import java.net.URI
 
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
@@ -26,7 +25,7 @@ bukkit {
 
     commands {
         register("connectdiscord") {
-            description = "Used for integrating discord and minecraftaccount"
+            description = "Used for integrating discord and minecraft account"
             permission = "mc2fa.connect"
             usage = "/connect"
             permissionMessage = "You don't have permission to perform this command."
