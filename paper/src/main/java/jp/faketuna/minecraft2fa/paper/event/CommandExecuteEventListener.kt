@@ -9,6 +9,7 @@ class CommandExecuteEventListener: Listener {
 
     @EventHandler
     fun onExecuteCommand(event: PlayerCommandPreprocessEvent){
+        if (event.message == "/connectdiscord") return
         if (event.player.hasPermission("mc2fa.connect")){
             if (!AuthInformationManager().isUserAuthorized(event.player.uniqueId)){
                 event.player.sendMessage("You are not authenticated. Please authorize in discord to execute command.")
