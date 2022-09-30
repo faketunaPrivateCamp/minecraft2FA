@@ -5,27 +5,62 @@ import org.bukkit.plugin.java.JavaPlugin
 
 
 class PaperConfigManager(private val plugin: JavaPlugin): Config() {
-    private var token: String? = plugin.config.getString("token")
+    private var token: String?
+    private var roleID: Long?
+    private val config = plugin.config
 
     init {
-        if (token == null){
-            writeDefault()
-            token = plugin.config.getString("token")
-        }
+        writeDefault()
+        token = config.getString("token")
+        roleID = config.getLong("connectableRoleID")
         Config.setToken(token.toString())
-
+        Config.setRoleID(config.getLong("connectableRoleID"))
+        Config.setMySQLServerAddress(config.getString("mysql.serverAddress").toString())
+        Config.setMySQLUserID(config.getString("mysql.userID").toString())
+        Config.setMySQLUserPassword(config.getString("mysql.userPassword").toString())
     }
 
     fun getToken(): String{
         return Config.getToken()
     }
 
+    fun getRoleID(): Long{
+        return Config.getRoleID()
+    }
+
     fun getConfig(): FileConfiguration {
-        return plugin.config
+        return config
+    }
+
+    fun getMySQLServerAddress(): String{
+        return Config.getMySQLServerAddress()
+    }
+
+    fun getMySQLUserID(): String{
+        return Config.getMySQLUserID()
+    }
+
+    fun getMySQLUserPassword(): String{
+        return Config.getMySQLUserPassword()
     }
 
     private fun writeDefault(){
-        plugin.config.set("token", "justpasteyourtoken32234235lk34j5lk")
+        val conf = getConfig()
+        if (!conf.contains("token")){
+            conf.set("token", "justpasteyourtoken32234235lk34j5lk")
+        }
+        if (!conf.contains("connectableRoleID")) {
+            conf.set("connectableRoleID", "209348572902897")
+        }
+        if (!conf.contains("mysql.serverAddress")){
+            conf.set("mysql.serverAddress", "127.0.0.1")
+        }
+        if (!conf.contains("mysql.userID")){
+            conf.set("mysql.userID", "")
+        }
+        if (!conf.contains("mysql.userPassword")){
+            conf.set("mysql.userPassword", "")
+        }
         plugin.saveConfig()
     }
 }

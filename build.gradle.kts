@@ -29,6 +29,13 @@ subprojects{
             exclude("opus-java")
         }
     }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "17"
+        }
+    }
 }
 
 project(":minecraft2FA-paper"){
@@ -60,6 +67,10 @@ project(":minecraft2FA-shared"){
     dependencies{
         compileOnly("io.github.waterfallmc:waterfall-api:${proxyVersion}-R0.1-SNAPSHOT")
         compileOnly("io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT")
+        implementation("mysql:mysql-connector-java:8.0.15")
+        implementation("com.warrenstrange:googleauth:1.5.0")
+        implementation("com.google.zxing:core:3.5.0")
+        implementation("com.google.zxing:javase:3.5.0")
     }
 
 }
