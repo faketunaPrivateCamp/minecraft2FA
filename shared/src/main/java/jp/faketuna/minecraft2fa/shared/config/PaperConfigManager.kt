@@ -49,6 +49,10 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
         return Config.getSessionExpireTime()
     }
 
+    fun getPluginPrefix(): String{
+        return Config.getPluginPrefix()
+    }
+
     private fun writeDefault(){
         val conf = getConfig()
         if (!conf.contains("token")){

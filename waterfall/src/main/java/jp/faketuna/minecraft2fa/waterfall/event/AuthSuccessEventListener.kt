@@ -1,6 +1,7 @@
 package jp.faketuna.minecraft2fa.waterfall.event
 
 import com.google.common.io.ByteStreams
+import jp.faketuna.minecraft2fa.shared.config.ConfigManager
 import jp.faketuna.minecraft2fa.shared.manager.AuthInformationManager
 import jp.faketuna.minecraft2fa.waterfall.manager.PluginInstanceManager
 import net.md_5.bungee.api.ProxyServer
@@ -17,10 +18,11 @@ class AuthSuccessEventListener: Listener {
     fun onAuthSuccess(event: AuthSuccessEvent) {
         // TODO PluginMessaging 処理
         AuthInformationManager().addAuthorizedUser(event.getUUID())
+        val prefix = ConfigManager().getConfigManager(PluginInstanceManager().getPlugin()).getPluginPrefix()
         val player = ProxyServer.getInstance().getPlayer(event.getUUID())
         if (player != null){
             println("player has in")
-            player.sendMessage(TextComponent("§aYour now verified and can execute moderation commands!"))
+            player.sendMessage(TextComponent("$prefix §aYour now verified and can execute moderation commands!"))
             sendAuthData(player.server, player.uniqueId)
         }
         ProxyServer.getInstance().scheduler.schedule(

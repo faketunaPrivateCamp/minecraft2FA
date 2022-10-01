@@ -67,6 +67,10 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
         return Config.getSessionExpireTime()
     }
 
+    fun getPluginPrefix(): String{
+        return Config.getPluginPrefix()
+    }
+
     private fun writeDefault(){
         val conf = getConfig()
         if (!conf.contains("token")){
