@@ -11,7 +11,7 @@ class CommandExecuteEventListener(private val isBungee: Boolean): Listener {
     fun onExecuteCommand(event: PlayerCommandPreprocessEvent){
         if (event.message == "/connectdiscord") {
             when(isBungee){
-                true -> { event.isCancelled = true; return}
+                true -> { return}
                 false -> return
             }
         }
@@ -19,7 +19,7 @@ class CommandExecuteEventListener(private val isBungee: Boolean): Listener {
             if (AuthInformationManager().isUserAuthorized(event.player.uniqueId)) return
 
             when (isBungee){
-                true -> { event.isCancelled = true; return }
+                true -> { return }
                 false -> { event.player.sendMessage("You are not authenticated. Please authorize in discord to execute command.") }
             }
 
