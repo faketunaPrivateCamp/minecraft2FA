@@ -14,7 +14,7 @@ class AuthSuccessEventListener: Listener {
         // TODO PluginMessaging 処理
         AuthInformationManager().addAuthorizedUser(event.getUUID())
         ProxyServer.getInstance().scheduler.schedule(PluginInstanceManager().getPlugin(), Runnable {
-            AuthInformationManager().removeAuthorizedUser(event.getUUID())
+            AuthInformationManager().addAuthorizeExpiredUser(event.getUUID())
         }, PluginInstanceManager().getConfigManager(PluginInstanceManager().getPlugin()).getSessionExpireTime(), TimeUnit.SECONDS)
     }
 }

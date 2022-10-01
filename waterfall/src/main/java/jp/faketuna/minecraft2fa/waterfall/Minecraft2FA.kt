@@ -6,6 +6,7 @@ import jp.faketuna.minecraft2fa.waterfall.commands.ConnectCommand
 import jp.faketuna.minecraft2fa.waterfall.discord.Bot
 import jp.faketuna.minecraft2fa.waterfall.event.AuthSuccessEventListener
 import jp.faketuna.minecraft2fa.waterfall.event.CommandExecuteEventListener
+import jp.faketuna.minecraft2fa.waterfall.event.PlayerLeaveEventListener
 import jp.faketuna.minecraft2fa.waterfall.event.PluginMessageEventListener
 import jp.faketuna.minecraft2fa.waterfall.manager.PluginInstanceManager
 import net.dv8tion.jda.api.exceptions.InvalidTokenException
@@ -49,8 +50,9 @@ class Minecraft2FA: Plugin() {
             }
         }
         proxy.registerChannel("mc2fa:authentication")
-        proxy.pluginManager.registerListener(this, PluginMessageEventListener())
         proxy.pluginManager.registerCommand(this, ConnectCommand())
+        proxy.pluginManager.registerListener(this, PluginMessageEventListener())
+        proxy.pluginManager.registerListener(this, PlayerLeaveEventListener())
         proxy.pluginManager.registerListener(this, CommandExecuteEventListener())
         proxy.pluginManager.registerListener(this, AuthSuccessEventListener())
         manager.setPlugin(this)
