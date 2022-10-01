@@ -1,6 +1,6 @@
 package jp.faketuna.minecraft2fa.waterfall.discord
 
-import jp.faketuna.minecraft2fa.shared.auth.AuthManager
+import jp.faketuna.minecraft2fa.shared.manager.AuthManager
 import jp.faketuna.minecraft2fa.shared.discord.DiscordBot
 import jp.faketuna.minecraft2fa.waterfall.event.AuthSuccessEvent
 import jp.faketuna.minecraft2fa.waterfall.manager.PluginInstanceManager

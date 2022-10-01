@@ -8,6 +8,8 @@ open class Config {
         private var mySQLServerAddress: String = ""
         private var mySQLUserID: String = ""
         private var mySQLUserPassword: String = ""
+        private var sessionExpireTime: Long = 0
+        private const val pluginPrefix: String = "[§6Minecraft2FA§r]"
 
         fun getToken(): String{
             return token
@@ -44,6 +46,17 @@ open class Config {
         }
         fun setMySQLUserPassword(password: String){
             this.mySQLUserPassword = password
+        }
+
+        fun getSessionExpireTime(): Long{
+            return this.sessionExpireTime
+        }
+        fun setSessionExpireTime(expireTime: Long){
+            this.sessionExpireTime = expireTime
+        }
+
+        fun getPluginPrefix(): String{
+            return this.pluginPrefix
         }
     }
 }

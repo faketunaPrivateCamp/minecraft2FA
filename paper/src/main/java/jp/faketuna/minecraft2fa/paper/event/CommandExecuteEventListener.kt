@@ -1,5 +1,7 @@
 package jp.faketuna.minecraft2fa.paper.event
 
+import jp.faketuna.minecraft2fa.paper.manager.PluginInstanceManager
+import jp.faketuna.minecraft2fa.shared.config.ConfigManager
 import jp.faketuna.minecraft2fa.shared.manager.AuthInformationManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -11,16 +13,17 @@ class CommandExecuteEventListener(private val isBungee: Boolean): Listener {
     fun onExecuteCommand(event: PlayerCommandPreprocessEvent){
         if (event.message == "/connectdiscord") {
             when(isBungee){
-                true -> { event.isCancelled = true; return}
+                true -> { return}
                 false -> return
             }
         }
         if (event.player.hasPermission("mc2fa.connect")){
             if (AuthInformationManager().isUserAuthorized(event.player.uniqueId)) return
 
+            val prefix = ConfigManager().getConfigManager(PluginInstanceManager().getPlugin()).getPluginPrefix()
             when (isBungee){
-                true -> { event.isCancelled = true; return }
-                false -> { event.player.sendMessage("You are not authenticated. Please authorize in discord to execute command.") }
+                true -> { return }
+                false -> { event.player.sendMessage("$prefix You are not in verified session. Please verify your session in discord to execute command.") }
             }
 
             event.isCancelled = true

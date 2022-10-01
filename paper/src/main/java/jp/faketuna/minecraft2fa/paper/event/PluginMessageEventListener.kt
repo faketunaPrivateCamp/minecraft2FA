@@ -15,7 +15,6 @@ class PluginMessageEventListener: PluginMessageListener {
         if (subChannel.equals("authInformationShare", ignoreCase = true)){
             val uuid = UUID.fromString(inp.readUTF())
             val isVerified = inp.readBoolean()
-            println("is verified: $isVerified, uuid: $uuid")
             if (isVerified){
                 AuthInformationManager().addAuthorizedUser(uuid)
             }

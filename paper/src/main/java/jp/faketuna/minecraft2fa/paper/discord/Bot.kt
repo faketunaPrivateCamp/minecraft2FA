@@ -2,7 +2,7 @@ package jp.faketuna.minecraft2fa.paper.discord
 
 import jp.faketuna.minecraft2fa.paper.event.AuthSuccessEvent
 import jp.faketuna.minecraft2fa.paper.manager.PluginInstanceManager
-import jp.faketuna.minecraft2fa.shared.auth.AuthManager
+import jp.faketuna.minecraft2fa.shared.manager.AuthManager
 import jp.faketuna.minecraft2fa.shared.discord.DiscordBot
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent

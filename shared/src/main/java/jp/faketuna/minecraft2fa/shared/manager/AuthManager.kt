@@ -1,8 +1,7 @@
-package jp.faketuna.minecraft2fa.shared.auth
+package jp.faketuna.minecraft2fa.shared.manager
 
 import com.warrenstrange.googleauth.GoogleAuthenticator
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey
-import jp.faketuna.minecraft2fa.shared.manager.SharedPluginInstanceManager
 import java.math.BigInteger
 import java.security.MessageDigest
 
@@ -34,11 +33,11 @@ class AuthManager {
         }
 
         fun setUserBackupCode(discordID: Long ,codes: List<Int>){
-            this.registeringUsersBackupCode[discordID] = codes
+            registeringUsersBackupCode[discordID] = codes
         }
 
         fun getUserBackupCode(discordID: Long): List<Int>?{
-            return this.registeringUsersBackupCode[discordID]
+            return registeringUsersBackupCode[discordID]
         }
     }
 

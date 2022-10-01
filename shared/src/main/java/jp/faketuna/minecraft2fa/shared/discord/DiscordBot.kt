@@ -4,8 +4,9 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.client.j2se.MatrixToImageWriter
 import com.google.zxing.qrcode.QRCodeWriter
 import jp.faketuna.minecraft2fa.shared.auth.AccountConnection
-import jp.faketuna.minecraft2fa.shared.auth.AuthManager
+import jp.faketuna.minecraft2fa.shared.manager.AuthManager
 import jp.faketuna.minecraft2fa.shared.config.Config
+import jp.faketuna.minecraft2fa.shared.manager.AuthInformationManager
 import jp.faketuna.minecraft2fa.shared.manager.SharedPluginInstanceManager
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -24,6 +25,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.FileUpload
 import java.io.ByteArrayOutputStream
+import java.util.*
 import javax.imageio.ImageIO
 
 open class DiscordBot(private val token: String): ListenerAdapter() {
@@ -185,6 +187,12 @@ open class DiscordBot(private val token: String): ListenerAdapter() {
                     }
                     if (!authManager.isUserHas2FA(discordID)){
                         event.reply("You are not registered 2fa! Please register 2fa first! type `/auth register`.")
+                            .setEphemeral(true)
+                            .queue()
+                        return
+                    }
+                    if (AuthInformationManager().isUserAuthorized(UUID.fromString(SharedPluginInstanceManager().getMySQLInstance().getDiscordIntegrationInformation(discordID)["minecraft_uuid"]))){
+                        event.reply("You are already in verified session! verified session expire in {}.")
                             .setEphemeral(true)
                             .queue()
                         return
