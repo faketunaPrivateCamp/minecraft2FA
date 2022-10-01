@@ -18,6 +18,7 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
         Config.setMySQLServerAddress(config.getString("mysql.serverAddress").toString())
         Config.setMySQLUserID(config.getString("mysql.userID").toString())
         Config.setMySQLUserPassword(config.getString("mysql.userPassword").toString())
+        Config.setSessionExpireTime(config.getLong("sessionExpireTime"))
     }
 
     fun getToken(): String{
@@ -44,6 +45,10 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
         return Config.getMySQLUserPassword()
     }
 
+    fun getSessionExpireTime(): Long{
+        return Config.getSessionExpireTime()
+    }
+
     private fun writeDefault(){
         val conf = getConfig()
         if (!conf.contains("token")){
@@ -51,6 +56,9 @@ class PaperConfigManager(private val plugin: JavaPlugin): Config() {
         }
         if (!conf.contains("connectableRoleID")) {
             conf.set("connectableRoleID", "209348572902897")
+        }
+        if (!conf.contains("sessionExpireTime")){
+            conf.set("sessionExpireTime", 600)
         }
         if (!conf.contains("mysql.serverAddress")){
             conf.set("mysql.serverAddress", "127.0.0.1")
