@@ -48,6 +48,7 @@ class Minecraft2FA: JavaPlugin() {
                 }
             }
             Bukkit.getPluginManager().registerEvents(AuthSuccessEventListener(), this)
+            Bukkit.getPluginManager().registerEvents(AuthExpireEventListener(), this)
             Bukkit.getPluginManager().registerEvents(PlayerLeaveEventListener(), this)
             this.getCommand("connectdiscord")!!.setExecutor(ConnectCommand())
         } else {
