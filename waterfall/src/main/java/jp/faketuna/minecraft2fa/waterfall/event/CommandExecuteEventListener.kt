@@ -15,6 +15,7 @@ class CommandExecuteEventListener: Listener {
         }
         val player = event.sender as ProxiedPlayer
         if (event.isCommand){
+            if (event.message == "/discordconnect") return
             if (player.hasPermission("mc2fa.connect")){
                 player.sendMessage(TextComponent("You are not authenticated. Please authorize in discord to execute command."))
             }
