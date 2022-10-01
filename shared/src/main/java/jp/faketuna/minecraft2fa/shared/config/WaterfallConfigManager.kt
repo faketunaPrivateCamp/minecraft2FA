@@ -39,6 +39,7 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
         Config.setMySQLServerAddress(pluginConfig.getString("mysql.serverAddress").toString())
         Config.setMySQLUserID(pluginConfig.getString("mysql.userID").toString())
         Config.setMySQLUserPassword(pluginConfig.getString("mysql.userPassword").toString())
+        Config.setSessionExpireTime(pluginConfig.getLong("sessionExpireTime"))
         plugin.logger.info("Config loaded.")
     }
 
@@ -63,6 +64,10 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
         return Config.getMySQLUserPassword()
     }
 
+    fun getSessionExpireTime(): Long{
+        return Config.getSessionExpireTime()
+    }
+
     private fun writeDefault(){
         val conf = getConfig()
         if (!conf.contains("token")){
@@ -70,6 +75,9 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
         }
         if (!conf.contains("connectableRoleID")) {
             conf.set("connectableRoleID", "209348572902897")
+        }
+        if (!conf.contains("sessionExpireTime")){
+            conf.set("sessionExpireTime", 600)
         }
         if (!conf.contains("mysql.serverAddress")){
             conf.set("mysql.serverAddress", "127.0.0.1")

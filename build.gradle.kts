@@ -25,9 +25,7 @@ subprojects{
 
     dependencies {
         //implementation("org.yaml:snakeyaml:1.32")
-        implementation("net.dv8tion:JDA:5.0.0-alpha.20") {
-            exclude("opus-java")
-        }
+        implementation("net.dv8tion:JDA:5.0.0-alpha.20")
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

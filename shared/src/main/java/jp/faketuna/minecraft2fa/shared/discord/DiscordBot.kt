@@ -4,9 +4,8 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.client.j2se.MatrixToImageWriter
 import com.google.zxing.qrcode.QRCodeWriter
 import jp.faketuna.minecraft2fa.shared.auth.AccountConnection
-import jp.faketuna.minecraft2fa.shared.auth.AuthManager
+import jp.faketuna.minecraft2fa.shared.manager.AuthManager
 import jp.faketuna.minecraft2fa.shared.config.Config
-import jp.faketuna.minecraft2fa.shared.database.MySQL
 import jp.faketuna.minecraft2fa.shared.manager.AuthInformationManager
 import jp.faketuna.minecraft2fa.shared.manager.SharedPluginInstanceManager
 import net.dv8tion.jda.api.JDA
