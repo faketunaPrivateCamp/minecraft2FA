@@ -4,6 +4,8 @@ import jp.faketuna.minecraft2fa.paper.commands.ConnectCommand
 import jp.faketuna.minecraft2fa.paper.discord.Bot
 import jp.faketuna.minecraft2fa.paper.event.AuthSuccessEventListener
 import jp.faketuna.minecraft2fa.paper.event.CommandExecuteEventListener
+import jp.faketuna.minecraft2fa.paper.event.PlayerJoinListener
+import jp.faketuna.minecraft2fa.paper.event.PluginMessageEventListener
 import jp.faketuna.minecraft2fa.paper.manager.PluginInstanceManager
 import jp.faketuna.minecraft2fa.shared.config.ConfigManager
 import jp.faketuna.minecraft2fa.shared.database.MySQL
@@ -17,7 +19,8 @@ class Minecraft2FA: JavaPlugin() {
     override fun onEnable() {
         logger.info("Loading plugin")
         manager.setConfigManager(ConfigManager())
-        if(!Bukkit.spigot().config.getBoolean("settings.bungeecord")){
+        val isBungee = Bukkit.spigot().config.getBoolean("settings.bungeecord")
+        if(!isBungee){
             logger.info("Running in standalone mode.")
             val config = manager.getConfigManager(this)
             val token = config.getToken()
@@ -51,13 +54,18 @@ class Minecraft2FA: JavaPlugin() {
             this.getCommand("connectdiscord")!!.setExecutor(ConnectCommand())
         } else {
             logger.info("Running in bungeecord mode.")
+            server.messenger.registerOutgoingPluginChannel(this, "mc2fa:authentication")
+            server.messenger.registerIncomingPluginChannel(this, "mc2fa:authentication", PluginMessageEventListener())
+            Bukkit.getPluginManager().registerEvents(PlayerJoinListener(), this)
         }
-        Bukkit.getPluginManager().registerEvents(CommandExecuteEventListener(), this)
+        Bukkit.getPluginManager().registerEvents(CommandExecuteEventListener(isBungee), this)
         manager.setPlugin(this)
     }
 
     override fun onDisable() {
         logger.info("plugin unloaded")
+        server.messenger.unregisterIncomingPluginChannel(this)
+        server.messenger.unregisterOutgoingPluginChannel(this)
         if (manager.isDiscordBotInitialized()) manager.getDiscordBotInstance().shutdownBot()
     }
 }

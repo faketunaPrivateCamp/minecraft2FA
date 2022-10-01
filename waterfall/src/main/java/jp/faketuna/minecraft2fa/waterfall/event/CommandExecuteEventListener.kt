@@ -1,5 +1,6 @@
 package jp.faketuna.minecraft2fa.waterfall.event
 
+import jp.faketuna.minecraft2fa.shared.manager.AuthInformationManager
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.event.ChatEvent
@@ -15,9 +16,12 @@ class CommandExecuteEventListener: Listener {
         }
         val player = event.sender as ProxiedPlayer
         if (event.isCommand){
-            if (event.message == "/discordconnect") return
+            val args = event.message.split(" ")
+            if (args[0] == "/connectdiscord") return
+            if (AuthInformationManager().isUserAuthorized(player.uniqueId)) return
             if (player.hasPermission("mc2fa.connect")){
                 player.sendMessage(TextComponent("You are not authenticated. Please authorize in discord to execute command."))
+                event.isCancelled = true
             }
         }
     }
