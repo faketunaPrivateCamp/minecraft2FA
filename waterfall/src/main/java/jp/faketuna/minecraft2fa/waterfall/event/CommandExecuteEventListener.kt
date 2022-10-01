@@ -20,7 +20,7 @@ class CommandExecuteEventListener: Listener {
             if (args[0] == "/connectdiscord") return
             if (AuthInformationManager().isUserAuthorized(player.uniqueId)) return
             if (player.hasPermission("mc2fa.connect")){
-                player.sendMessage(TextComponent("You are not authenticated. Please authorize in discord to execute command."))
+                player.sendMessage(TextComponent("You are not in verified session. Please verify your session in discord to execute command."))
                 event.isCancelled = true
             }
         }

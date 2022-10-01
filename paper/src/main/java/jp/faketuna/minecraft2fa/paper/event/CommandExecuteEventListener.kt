@@ -20,7 +20,7 @@ class CommandExecuteEventListener(private val isBungee: Boolean): Listener {
 
             when (isBungee){
                 true -> { return }
-                false -> { event.player.sendMessage("You are not authenticated. Please authorize in discord to execute command.") }
+                false -> { event.player.sendMessage("You are not in verified session. Please verify your session in discord to execute command.") }
             }
 
             event.isCancelled = true
