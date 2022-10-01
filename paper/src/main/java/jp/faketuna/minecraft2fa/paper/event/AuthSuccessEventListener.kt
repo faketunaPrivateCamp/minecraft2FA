@@ -16,7 +16,7 @@ class AuthSuccessEventListener: Listener {
         val prefix = ConfigManager().getConfigManager(PluginInstanceManager().getPlugin()).getPluginPrefix()
         Bukkit.getPlayer(event.uuid)?.sendMessage(Component.text("$prefix §aYour now verified and can execute moderation commands!"))
         Bukkit.getScheduler().runTaskLater(PluginInstanceManager().getPlugin(), Runnable {
-            AuthInformationManager().addAuthorizeExpiredUser(event.uuid)
+            Bukkit.getPluginManager().callEvent(AuthExpireEvent(event.uuid))
         }, PluginInstanceManager().getConfigManager(PluginInstanceManager().getPlugin()).getSessionExpireTime() * 20)
     }
 }

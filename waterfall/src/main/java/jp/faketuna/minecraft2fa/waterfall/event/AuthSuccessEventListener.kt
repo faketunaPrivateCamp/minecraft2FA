@@ -16,23 +16,16 @@ class AuthSuccessEventListener: Listener {
 
     @EventHandler
     fun onAuthSuccess(event: AuthSuccessEvent) {
-        // TODO PluginMessaging 処理
         AuthInformationManager().addAuthorizedUser(event.getUUID())
         val prefix = ConfigManager().getConfigManager(PluginInstanceManager().getPlugin()).getPluginPrefix()
         val player = ProxyServer.getInstance().getPlayer(event.getUUID())
         if (player != null){
-            println("player has in")
             player.sendMessage(TextComponent("$prefix §aYour now verified and can execute moderation commands!"))
             sendAuthData(player.server, player.uniqueId)
         }
-        ProxyServer.getInstance().scheduler.schedule(
-            PluginInstanceManager().getPlugin(),
-            Runnable {
-                AuthInformationManager().addAuthorizeExpiredUser(event.getUUID())
-            },
-            PluginInstanceManager().getConfigManager(PluginInstanceManager().getPlugin()).getSessionExpireTime(),
-            TimeUnit.SECONDS
-        )
+        ProxyServer.getInstance().scheduler.schedule(PluginInstanceManager().getPlugin(), Runnable {
+                ProxyServer.getInstance().pluginManager.callEvent(AuthExpireEvent(event.getUUID()))
+        }, PluginInstanceManager().getConfigManager(PluginInstanceManager().getPlugin()).getSessionExpireTime(), TimeUnit.SECONDS)
     }
 
     private fun sendAuthData(server: Server, uuid: UUID){

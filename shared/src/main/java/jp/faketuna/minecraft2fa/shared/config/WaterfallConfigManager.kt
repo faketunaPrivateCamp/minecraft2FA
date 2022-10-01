@@ -39,7 +39,7 @@ class WaterfallConfigManager(private val plugin: Plugin): Config() {
         Config.setMySQLServerAddress(pluginConfig.getString("mysql.serverAddress").toString())
         Config.setMySQLUserID(pluginConfig.getString("mysql.userID").toString())
         Config.setMySQLUserPassword(pluginConfig.getString("mysql.userPassword").toString())
-        Config.setSessionExpireTime(pluginConfig.getLong("sessionExpireTime"))
+        Config.setSessionExpireTime(pluginConfig.getLong("sessionExpireTime", 60))
     }
 
 
