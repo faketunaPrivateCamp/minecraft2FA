@@ -13,7 +13,7 @@ class AuthSuccessEventListener: Listener {
     fun onAuthSuccess(event: AuthSuccessEvent){
         AuthInformationManager().addAuthorizedUser(event.uuid)
         Bukkit.getScheduler().runTaskLater(PluginInstanceManager().getPlugin(), Runnable {
-            AuthInformationManager().removeAuthorizedUser(event.uuid)
+            AuthInformationManager().addAuthorizeExpiredUser(event.uuid)
         }, PluginInstanceManager().getConfigManager(PluginInstanceManager().getPlugin()).getSessionExpireTime() * 20)
     }
 }
