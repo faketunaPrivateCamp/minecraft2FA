@@ -5,16 +5,26 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 
-class CommandExecuteEventListener: Listener {
+class CommandExecuteEventListener(private val isBungee: Boolean): Listener {
 
     @EventHandler
     fun onExecuteCommand(event: PlayerCommandPreprocessEvent){
-        if (event.message == "/connectdiscord") return
-        if (event.player.hasPermission("mc2fa.connect")){
-            if (!AuthInformationManager().isUserAuthorized(event.player.uniqueId)){
-                event.player.sendMessage("You are not authenticated. Please authorize in discord to execute command.")
-                event.isCancelled = true
+        if (event.message == "/connectdiscord") {
+            when(isBungee){
+                true -> { event.isCancelled = true; return}
+                false -> return
             }
+        }
+        if (event.player.hasPermission("mc2fa.connect")){
+            if (AuthInformationManager().isUserAuthorized(event.player.uniqueId)) return
+
+            when (isBungee){
+                true -> { event.isCancelled = true; return }
+                false -> { event.player.sendMessage("You are not authenticated. Please authorize in discord to execute command.") }
+            }
+
+            event.isCancelled = true
+
         }
     }
 }
